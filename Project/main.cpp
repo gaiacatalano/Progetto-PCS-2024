@@ -50,9 +50,12 @@ int main()
     printLocalResults("lresults.txt",dfn.Fractures,dfn.Traces);
 
     CreateMesh(dfn.Fractures,tol,dfn,plm);
-    for(size_t i=0; i<plm.meshes.size(); i++){
+
+    for(unsigned int i=0; i<plm.meshes.size(); i++){
         cout << "Numero di celle 2D: " << plm.meshes[i].numPolygons << endl;
     }
+
+    cout << "Print di prova" << endl;
 
     //tryOutput("try.txt",plm);
 
