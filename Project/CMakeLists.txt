@@ -61,16 +61,10 @@ file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/DFN DESTINATION ${CMAKE_CURRENT_BINARY_DIR
 # Create executable
 ################################################################################
 
-
-#add_executable(${CMAKE_PROJECT_NAME} main.cpp ${${CMAKE_PROJECT_NAME}_sources} ${${CMAKE_PROJECT_NAME}_headers})
-add_executable(${PROJECT_NAME}
+add_executable(${CMAKE_PROJECT_NAME}
         main.cpp
-        ${DFN_SOURCES}
-        ${DFN_HEADERS}
-    src/DFN.hpp
-    src/Utils.cpp
-    src/Utils.hpp
-    src/PolygonalMesh.hpp)
+        ${${CMAKE_PROJECT_NAME}_sources}
+        ${${CMAKE_PROJECT_NAME}_headers})
 
 add_executable(${CMAKE_PROJECT_NAME}_TEST main_TEST.cpp
     ${${CMAKE_PROJECT_NAME}_sources}
