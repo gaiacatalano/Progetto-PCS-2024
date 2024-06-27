@@ -74,7 +74,6 @@ struct DFN
     unsigned int fractureNumber = 0;      // numero di fratture
     vector<Fracture> Fractures = {};      // vettore di fratture
     vector<Trace> Traces = {};            // vettore di tracce
-    MatrixXi Intersections = {};          // matrice di intersezione tra le fratture
 };
 
 
