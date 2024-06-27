@@ -239,11 +239,11 @@ TEST(TRACESTEST, TestFindTraces)
 TEST(TRACESTEST, TestSort){
     vector<unsigned int> ids = {0, 1};
     Trace a;
-    a.setIdTrace(0);
-    a.setLength(2);
+    a.idTrace = 0;
+    a.length = 2;
     Trace b;
-    b.setIdTrace(1);
-    b.setLength(1);
+    b.idTrace = 1;
+    b.length = 1;
 
     vector<Trace> trs = {a, b};
 

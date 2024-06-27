@@ -46,14 +46,14 @@ bool ImportFractures(const string& filePath, DFN& dfn, double tol) {
         // salvo l'id nella frattura
         unsigned int idFra;
         convertId >> idFra;
-        fra.setId(idFra);
+        fra.id = idFra;
 
         getline(file, line);
         istringstream convertVert(line);   // numero di vertici
         // salvo il numero di vertici nella frattura
         unsigned int numVert;
         convertVert >> numVert;
-        fra.setVerticesNumber(numVert);
+        fra.verticesNumber = numVert;
 
         // trovo la matrice delle coordinate dei vertici e la salvo
         MatrixXd VerMatrix(3, numVert);
@@ -70,11 +70,11 @@ bool ImportFractures(const string& filePath, DFN& dfn, double tol) {
             }
         }
 
-        fra.setVerticesCoordinates(VerMatrix);
+        fra.verticesCoordinates = VerMatrix;
 
         // calcolo il baricentro della frattura e lo salvo
         Vector3d barycenter = VerMatrix.rowwise().mean();
-        fra.setBarycenter(barycenter);
+        fra.barycenter = barycenter;
 
         // calcolo e salvo il raggio
         double radius = 0;
@@ -85,7 +85,7 @@ bool ImportFractures(const string& filePath, DFN& dfn, double tol) {
                 radius = d;
             }
         }
-        fra.setRadius(radius);
+        fra.radius = radius;
 
         // calcolo e salvo la normale
         Vector3d v1 = fra.verticesCoordinates.col(0);
@@ -94,12 +94,12 @@ bool ImportFractures(const string& filePath, DFN& dfn, double tol) {
         Vector3d d1 = v1-v2;
         Vector3d d2 = v3-v2;
         Vector3d normal = d1.cross(d2);
-        fra.setNormal(normal);
+        fra.normal = normal;
 
         // calcolo e salvo il piano
         double d = (fra.normal[0]*fra.barycenter[0] + fra.normal[1]*fra.barycenter[1] + fra.normal[2]*fra.barycenter[2]);
         Vector4d plane = {fra.normal[0], fra.normal[1], fra.normal[2], d};
-        fra.setPlane(plane);
+        fra.plane = plane;
 
         // salvo la frattura nel vettore delle fratture
         dfn.Fractures[i] = fra;
@@ -335,26 +335,26 @@ void FindTraces(vector<Fracture> &fractures, double tol, DFN &dfn)
             if (length > tol){
                 // creo la traccia
                 Trace tr;
-                tr.setIdTrace(count);
-                tr.setExtremitiesCoordinates(estremiTraccia);
-                tr.setFracturesIds({f1.id,f2.id});
-                tr.setLength(length);
-                tr.setTips(tips);
-                tr.setLineTrace(rettaf1xf2);
+                tr.idTrace = count;
+                tr.extremitiesCoordinates = estremiTraccia;
+                tr.fracturesIds = {f1.id,f2.id};
+                tr.length = length;
+                tr.Tips = tips;
+                tr.lineTrace = rettaf1xf2;
 
                 if(tips[0]){
-                    f1.notPassingTraces.push_back(tr.getIdTrace());
+                    f1.notPassingTraces.push_back(tr.idTrace);
                 }
                 else{
-                    f1.passingTraces.push_back(tr.getIdTrace());
+                    f1.passingTraces.push_back(tr.idTrace);
 
                 }
                 if(tips[1]){
-                    f2.notPassingTraces.push_back(tr.getIdTrace());
+                    f2.notPassingTraces.push_back(tr.idTrace);
 
                 }
                 else{
-                    f2.passingTraces.push_back(tr.getIdTrace());
+                    f2.passingTraces.push_back(tr.idTrace);
                 }
 
                 dfn.Traces.push_back(tr);
@@ -419,7 +419,8 @@ void sortTracesByLength(vector<unsigned int>& vecIdTraces, const vector<Trace>& 
 }
 }
 
-namespace PolygonalMeshLibrary
+
+/*namespace PolygonalMeshLibrary
 {
 
 int PositionVert(const Vector3d& point, array<Vector3d,2> retta) {
@@ -677,7 +678,7 @@ void cutFracture(PolygonalMesh &mesh, Fracture& fra, vector<Vector3d>& vertCoor,
                     vertCoorSub2.push_back(ver1);
                 }
             }
-            */
+
         }
 
         /*
@@ -703,7 +704,7 @@ void cutFracture(PolygonalMesh &mesh, Fracture& fra, vector<Vector3d>& vertCoor,
                 vertCoorSub2.push_back(vert);
             }
         }
-*/
+
         // divido le tracce
         vector<Trace> tracesSub1;
         vector<Trace> tracesSub2;
@@ -800,7 +801,7 @@ void CreateMesh(vector<Fracture>& fractures, double tol, DFN &dfn, plm &plm){
         for (unsigned int k=0; k<allTraces.size(); k++){
             cout << dfn.Traces[allTraces[k]].Tips[0] << endl;
             cout << dfn.Traces[allTraces[k]].length << endl;
-        }*/
+        }
 
 
         PolygonalMesh Mesh;
@@ -818,7 +819,7 @@ void CreateMesh(vector<Fracture>& fractures, double tol, DFN &dfn, plm &plm){
 
     }
 }
-
+/*
 void tryOutput (const string& fileName, plm &plm){ // primo file di ouput, con le informazioni sulle tracce
     ofstream ofstr(fileName); // se il file non esiste, lo crea
     ofstr << "# Number of Meshes" << endl;
@@ -841,9 +842,9 @@ void tryOutput (const string& fileName, plm &plm){ // primo file di ouput, con l
         ofstr << meh.NumberCell2D << endl;
     }
     ofstr.close();
-}
+}*/
 
-}
+//}
 
 
 
