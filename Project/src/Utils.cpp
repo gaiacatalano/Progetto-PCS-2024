@@ -303,18 +303,18 @@ void FindTraces(vector<Fracture> &fractures, double tol, DFN &dfn)
             array<Vector3d, 2> puntiInterf2 = {rettaf1xf2[0] + (betaf2[0]*rettaf1xf2[1]), rettaf1xf2[0] + (betaf2[1]*rettaf1xf2[1])};
 
 
-            if (betaf1[1]<betaf2[0] || betaf2[1]<betaf1[0]){ // caso in cui sono disgiunte lungo la retta (viene "prima" f1 o f2)
+            if (betaf1[1]<betaf2[0]+tol || betaf2[1]<betaf1[0]+tol){ // caso in cui sono disgiunte lungo la retta (viene "prima" f1 o f2)
                 continue;
             }
             else { // c'è intersezione
-                if (betaf1[0]<betaf2[0]){
+                if (betaf1[0]<betaf2[0]+tol){
                     estremiTraccia[0] = rettaf1xf2[0] + (betaf2[0]*rettaf1xf2[1]);
                 }
                 else{
                     estremiTraccia[0] = rettaf1xf2[0] + (betaf1[0]*rettaf1xf2[1]);
                 }
 
-                if (betaf1[1]<betaf2[1]){
+                if (betaf1[1]<betaf2[1]+tol){
                     estremiTraccia[1] = rettaf1xf2[0] + (betaf1[1]*rettaf1xf2[1]);
                 }
                 else{
@@ -418,7 +418,6 @@ void sortTracesByLength(vector<unsigned int>& vecIdTraces, const vector<Trace>& 
     });
 }
 }
-
 
 namespace PolygonalMeshLibrary
 {
@@ -547,7 +546,6 @@ void cutFracture(PolygonalMesh &mesh, Fracture& fra, vector<Vector3d>& vertCoor,
         mesh.active_polygon.push_back(true);
     }
     else {
-        //
         // 1) Utilizzare la funzione InterFractureLine per trovare i punti di intersezione della
         //    traccia (passante o non passannte con l'insieme di vertici in considerazione)
         // 2) Dividere i vertici a seconda che si trovino a destra o a sinistra della traccia in due sottoinsiemi
@@ -579,13 +577,13 @@ void cutFracture(PolygonalMesh &mesh, Fracture& fra, vector<Vector3d>& vertCoor,
         for (unsigned int i = 0; i < idVertEdgesTrace.size(); i++) {
             unsigned int j = (idVertEdgesTrace[i] + 1) % vertIds.size();
             Vector2i lato = {vertIds[idVertEdgesTrace[i]],vertIds[j]};
-            for (unsigned int ed = 0; i < mesh.idEdges.size(); i++) {
+            for (unsigned int ed = 0; ed < mesh.idEdges.size(); ed++) {
                 if (mesh.extremitiesEdges[ed]==lato){
 
                     Vector2i idInterEdg = {};
 
                     Vector2i latoNew1 = {vertIds[idVertEdgesTrace[i]],idInterVert[i]};
-                    idInterEdg[i] = countIdE;
+                    idInterEdg[0] = countIdE;
                     mesh.idEdges.push_back(countIdE);
                     countIdE++;
                     mesh.extremitiesEdges.push_back(latoNew1);
@@ -593,7 +591,7 @@ void cutFracture(PolygonalMesh &mesh, Fracture& fra, vector<Vector3d>& vertCoor,
                     mesh.newedge.push_back({-1,-1});
 
                     Vector2i latoNew2 = {idInterVert[i],vertIds[j]};
-                    idInterEdg[i] = countIdE;
+                    idInterEdg[1] = countIdE;
                     mesh.idEdges.push_back(countIdE);
                     countIdE++;
                     mesh.extremitiesEdges.push_back(latoNew2);
@@ -604,7 +602,7 @@ void cutFracture(PolygonalMesh &mesh, Fracture& fra, vector<Vector3d>& vertCoor,
                     mesh.active_edge[ed] = false;
                     mesh.newedge[ed] = idInterEdg;
 
-                    for (unsigned int i = 0; i < 2; i++) {
+                    for (unsigned int p = 0; p < 2; p++) {
                         int idP = mesh.nearPolygons[ed][i];
                         if (idP != -1){
                             vector<unsigned int> v = mesh.edgesPolygons[idP];
@@ -706,7 +704,6 @@ void cutFracture(PolygonalMesh &mesh, Fracture& fra, vector<Vector3d>& vertCoor,
             }
         }
 */
-
         // divido le tracce
         vector<Trace> tracesSub1;
         vector<Trace> tracesSub2;
@@ -729,7 +726,6 @@ void cutFracture(PolygonalMesh &mesh, Fracture& fra, vector<Vector3d>& vertCoor,
             }
         }
 
-
         // creo le due sotto fratture
         Fracture fraSub1;
         Fracture fraSub2;
@@ -750,11 +746,9 @@ void cutFracture(PolygonalMesh &mesh, Fracture& fra, vector<Vector3d>& vertCoor,
         }
         fraSub2.setVerticesCoordinates(VerMatrixSub2);
 
-
         // richiamo la funzione per le sottofratture fino alla fine delle tracce
         cutFracture(mesh, fraSub1, vertCoorSub1, tracesSub1, countIdV, countIdE, countIdP, tol);
         cutFracture(mesh, fraSub2, vertCoorSub2, tracesSub2, countIdV, countIdE, countIdP, tol);
-
 
     }
 
