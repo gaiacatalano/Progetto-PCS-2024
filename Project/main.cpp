@@ -12,7 +12,7 @@ int main()
 {
     DFN dfn;
     plm plm;
-    string path = "DFN/FR10_data.txt";
+    string path = "DFN/FR3_data.txt";
     double tol=10*numeric_limits<double>::epsilon();
 
     //cout << "Insert file path: ";
@@ -52,7 +52,7 @@ int main()
     CreateMesh(dfn.Fractures,tol,dfn,plm);
 
     for(unsigned int i=0; i<plm.meshes.size(); i++){
-        cout << "Numero di celle 2D: " << plm.meshes[i].numPolygons << endl;
+        cout << "Numero di celle 2D: " << plm.meshes[i].NumberCell2D << endl;
     }
 
     cout << "Print di prova" << endl;
