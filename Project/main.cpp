@@ -13,7 +13,7 @@ int main()
     DFN dfn;
     plm plm;
 
-    string path = "DFN/FR3_data.txt";
+    string path = "DFN/FR10_data.txt";
     double tol=10*numeric_limits<double>::epsilon();
 
     //cout << "Insert file path: ";

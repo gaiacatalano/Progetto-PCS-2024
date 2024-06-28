@@ -423,20 +423,21 @@ void sortTracesByLength(vector<unsigned int>& vecIdTraces, const vector<Trace>& 
 namespace PolygonalMeshLibrary
 {
 
-int PositionVert(const Vector3d& point, array<Vector3d,2> retta) {
+int PositionVert(const Vector3d& point, array<Vector3d,2> retta, double tol) {
+    double tol2 = max(10*numeric_limits<double>::epsilon(), tol*tol);
     Vector3d relPoint = point - retta[0];
     Vector3d crossProduct = relPoint.cross(retta[1]);
     double dotProduct = crossProduct.dot(Vector3d(0, 0, 1));
-    if (dotProduct > 0) {
+    if (dotProduct > tol2) {
         return 1;
     }
-    if (dotProduct < 0){
+    if (dotProduct < tol2){
         return -1;
     }
     return 0;
 }
 
-void InterFractureLine2(PolygonalMesh &mesh, vector<unsigned int> &vertIds, array<Vector3d, 2> &r, array<unsigned int, 2>& vertIdsHelp, array<unsigned int, 2>& interIds, unsigned int& idTraccia, unsigned int countIdV, unsigned int countIdE, double tol){
+void CutAndSave(PolygonalMesh &mesh, vector<unsigned int> &vertIds, array<Vector3d, 2> &r, array<unsigned int, 2>& vertIdsHelp, array<unsigned int, 2>& interIds, unsigned int& idTraccia, unsigned int countIdV, unsigned int countIdE, double tol){
     double tol2 = max(10*numeric_limits<double>::epsilon(), tol*tol);
     Vector3d punto = r[0];
     Vector3d direzioneRetta = r[1];
@@ -498,79 +499,212 @@ void InterFractureLine2(PolygonalMesh &mesh, vector<unsigned int> &vertIds, arra
     // trovo e salvo le intersezioni
     array<Vector3d, 2> puntiInterFraTra = {r[0] + (beta[0]*r[1]), r[0] + (beta[1]*r[1])};
 
-    for (unsigned int in = 0; in < 2; in++){
-        interIds[in] = countIdV;
+    // se non coincide nessuno dei due
+    if ((PointsDistance(puntiInterFraTra[0], mesh.coordVertices[edgeSpVert[0][0]])>tol && PointsDistance(puntiInterFraTra[0], mesh.coordVertices[edgeSpVert[0][1]])>tol)
+        && (PointsDistance(puntiInterFraTra[1], mesh.coordVertices[edgeSpVert[1][0]])>tol && PointsDistance(puntiInterFraTra[1], mesh.coordVertices[edgeSpVert[1][1]])>tol)){
+
+        for (unsigned int in = 0; in < 2; in++){
+            interIds[in] = countIdV;
+            countIdV++;
+            mesh.idVertices.push_back(interIds[in]);
+            mesh.coordVertices.push_back(puntiInterFraTra[in]);
+
+        }
+
+        // nuovi lati
+        array<unsigned int, 4> edgeNewIds;
+
+        // nuovo lato 1
+        edgeNewIds[0] = countIdE;
+        countIdE++;
+        mesh.idEdges.push_back(edgeNewIds[0]);
+        mesh.extremitiesEdges.push_back({edgeSpVert[0][0],interIds[0]});
+        mesh.active_edge.push_back(true);
+        mesh.nearPolygons.push_back({-1,-1});
+        mesh.newedge.push_back({-1,-1});
+
+        // nuovo lato 2
+        edgeNewIds[1] = countIdE;
+        countIdE++;
+        mesh.idEdges.push_back(edgeNewIds[1]);
+        mesh.extremitiesEdges.push_back({interIds[0],edgeSpVert[0][1]});
+        mesh.active_edge.push_back(true);
+        mesh.nearPolygons.push_back({-1,-1});
+        mesh.newedge.push_back({-1,-1});
+
+        // nuovo lato 3
+        edgeNewIds[2] = countIdE;
+        countIdE++;
+        mesh.idEdges.push_back(edgeNewIds[2]);
+        mesh.extremitiesEdges.push_back({edgeSpVert[1][0],interIds[1]});
+        mesh.active_edge.push_back(true);
+        mesh.nearPolygons.push_back({-1,-1});
+        mesh.newedge.push_back({-1,-1});
+
+        // nuovo lato 4
+        edgeNewIds[3] = countIdE;
+        countIdE++;
+        mesh.idEdges.push_back(edgeNewIds[3]);
+        mesh.extremitiesEdges.push_back({interIds[1],edgeSpVert[1][1]});
+        mesh.active_edge.push_back(true);
+        mesh.nearPolygons.push_back({-1,-1});
+        mesh.newedge.push_back({-1,-1});
+
+        // spengo i lati e aggiungo i pezzi che li formano
+        mesh.active_edge[edgeOffIds[0]] = false;
+        if (mesh.nearPolygons[edgeOffIds[0]][0]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[0]][0]]==true){
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][0]].push_back(edgeNewIds[0]);
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][0]].push_back(edgeNewIds[1]);
+            mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][0]].push_back(interIds[0]);
+        }
+        if (mesh.nearPolygons[edgeOffIds[0]][1]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[0]][1]]==true){
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][1]].push_back(edgeNewIds[0]);
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][1]].push_back(edgeNewIds[1]);
+            mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][1]].push_back(interIds[0]);
+        }
+        mesh.newedge[edgeOffIds[0]] = {edgeNewIds[0],edgeNewIds[1]};
+
+        mesh.active_edge[edgeOffIds[1]] = false;
+        if (mesh.nearPolygons[edgeOffIds[1]][0]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[1]][0]]==true){
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][0]].push_back(edgeNewIds[2]);
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][0]].push_back(edgeNewIds[3]);
+            mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][0]].push_back(interIds[1]);
+        }
+        if (mesh.nearPolygons[edgeOffIds[1]][1]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[1]][1]]==true){
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][1]].push_back(edgeNewIds[2]);
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][1]].push_back(edgeNewIds[3]);
+            mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][1]].push_back(interIds[1]);
+        }
+        mesh.newedge[edgeOffIds[1]] = {edgeNewIds[2],edgeNewIds[3]};
+
+    }
+
+    // se coincide il primo e non il secondo
+    else if ((PointsDistance(puntiInterFraTra[0], mesh.coordVertices[edgeSpVert[0][0]])<tol || PointsDistance(puntiInterFraTra[0], mesh.coordVertices[edgeSpVert[0][1]])<tol)
+        && (PointsDistance(puntiInterFraTra[1], mesh.coordVertices[edgeSpVert[1][0]])>tol && PointsDistance(puntiInterFraTra[1], mesh.coordVertices[edgeSpVert[1][1]])>tol)){
+
+        if (PointsDistance(puntiInterFraTra[0], mesh.coordVertices[edgeSpVert[0][0]])<tol){
+            interIds[0] = edgeSpVert[0][0];
+        }
+        else{
+            interIds[0] = edgeSpVert[0][1];
+        }
+
+        interIds[1] = countIdV;
         countIdV++;
-        mesh.idVertices.push_back(interIds[in]);
-        mesh.coordVertices.push_back(puntiInterFraTra[in]);
+        mesh.idVertices.push_back(interIds[1]);
+        mesh.coordVertices.push_back(puntiInterFraTra[1]);
 
+
+        // nuovi lati
+        array<unsigned int, 2> edgeNewIds;
+
+        // nuovo lato 3
+        edgeNewIds[0] = countIdE;
+        countIdE++;
+        mesh.idEdges.push_back(edgeNewIds[0]);
+        mesh.extremitiesEdges.push_back({edgeSpVert[1][0],interIds[1]});
+        mesh.active_edge.push_back(true);
+        mesh.nearPolygons.push_back({-1,-1});
+        mesh.newedge.push_back({-1,-1});
+
+        // nuovo lato 4
+        edgeNewIds[1] = countIdE;
+        countIdE++;
+        mesh.idEdges.push_back(edgeNewIds[1]);
+        mesh.extremitiesEdges.push_back({interIds[1],edgeSpVert[1][1]});
+        mesh.active_edge.push_back(true);
+        mesh.nearPolygons.push_back({-1,-1});
+        mesh.newedge.push_back({-1,-1});
+
+        // spengo i lati e aggiungo i pezzi che li formano
+
+        mesh.active_edge[edgeOffIds[1]] = false;
+        if (mesh.nearPolygons[edgeOffIds[1]][0]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[1]][0]]==true){
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][0]].push_back(edgeNewIds[0]);
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][0]].push_back(edgeNewIds[1]);
+            mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][0]].push_back(interIds[1]);
+        }
+        if (mesh.nearPolygons[edgeOffIds[1]][1]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[1]][1]]==true){
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][1]].push_back(edgeNewIds[0]);
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][1]].push_back(edgeNewIds[1]);
+            mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][1]].push_back(interIds[1]);
+        }
+        mesh.newedge[edgeOffIds[1]] = {edgeNewIds[0],edgeNewIds[1]};
     }
 
-    // nuovi lati
-    array<unsigned int, 4> edgeNewIds;
+    // se coincide il secondo e non il primo
+    else if ((PointsDistance(puntiInterFraTra[0], mesh.coordVertices[edgeSpVert[0][0]])>tol && PointsDistance(puntiInterFraTra[0], mesh.coordVertices[edgeSpVert[0][1]])>tol)
+        && (PointsDistance(puntiInterFraTra[1], mesh.coordVertices[edgeSpVert[1][0]])<tol || PointsDistance(puntiInterFraTra[1], mesh.coordVertices[edgeSpVert[1][1]])<tol)){
 
-    // nuovo lato 1
-    edgeNewIds[0] = countIdE;
-    countIdE++;
-    mesh.idEdges.push_back(edgeNewIds[0]);
-    mesh.extremitiesEdges.push_back({edgeSpVert[0][0],interIds[0]});
-    mesh.active_edge.push_back(true);
-    mesh.nearPolygons.push_back({-1,-1});
-    mesh.newedge.push_back({-1,-1});
+        if (PointsDistance(puntiInterFraTra[1], mesh.coordVertices[edgeSpVert[1][0]])<tol){
+            interIds[1] = edgeSpVert[1][0];
+        }
+        else{
+            interIds[1] = edgeSpVert[1][1];
+        }
 
-    // nuovo lato 2
-    edgeNewIds[1] = countIdE;
-    countIdE++;
-    mesh.idEdges.push_back(edgeNewIds[1]);
-    mesh.extremitiesEdges.push_back({interIds[0],edgeSpVert[0][1]});
-    mesh.active_edge.push_back(true);
-    mesh.nearPolygons.push_back({-1,-1});
-    mesh.newedge.push_back({-1,-1});
+        interIds[0] = countIdV;
+        countIdV++;
+        mesh.idVertices.push_back(interIds[0]);
+        mesh.coordVertices.push_back(puntiInterFraTra[0]);
 
-    // nuovo lato 3
-    edgeNewIds[2] = countIdE;
-    countIdE++;
-    mesh.idEdges.push_back(edgeNewIds[2]);
-    mesh.extremitiesEdges.push_back({edgeSpVert[1][0],interIds[1]});
-    mesh.active_edge.push_back(true);
-    mesh.nearPolygons.push_back({-1,-1});
-    mesh.newedge.push_back({-1,-1});
 
-    // nuovo lato 4
-    edgeNewIds[3] = countIdE;
-    countIdE++;
-    mesh.idEdges.push_back(edgeNewIds[3]);
-    mesh.extremitiesEdges.push_back({interIds[1],edgeSpVert[1][1]});
-    mesh.active_edge.push_back(true);
-    mesh.nearPolygons.push_back({-1,-1});
-    mesh.newedge.push_back({-1,-1});
+        // nuovi lati
+        array<unsigned int, 2> edgeNewIds;
 
-    // spengo i lati e aggiungo i pezzi che li formano
-    mesh.active_edge[edgeOffIds[0]] = false;
-    if (mesh.nearPolygons[edgeOffIds[0]][0]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[0]][0]]==true){
-        mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][0]].push_back(edgeNewIds[0]);
-        mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][0]].push_back(edgeNewIds[1]);
-        mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][0]].push_back(interIds[0]);
+        // nuovo lato 3
+        edgeNewIds[0] = countIdE;
+        countIdE++;
+        mesh.idEdges.push_back(edgeNewIds[0]);
+        mesh.extremitiesEdges.push_back({edgeSpVert[0][0],interIds[0]});
+        mesh.active_edge.push_back(true);
+        mesh.nearPolygons.push_back({-1,-1});
+        mesh.newedge.push_back({-1,-1});
+
+        // nuovo lato 4
+        edgeNewIds[1] = countIdE;
+        countIdE++;
+        mesh.idEdges.push_back(edgeNewIds[1]);
+        mesh.extremitiesEdges.push_back({interIds[0],edgeSpVert[0][1]});
+        mesh.active_edge.push_back(true);
+        mesh.nearPolygons.push_back({-1,-1});
+        mesh.newedge.push_back({-1,-1});
+
+        // spengo i lati e aggiungo i pezzi che li formano
+
+        mesh.active_edge[edgeOffIds[0]] = false;
+        if (mesh.nearPolygons[edgeOffIds[0]][0]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[0]][0]]==true){
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][0]].push_back(edgeNewIds[0]);
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][0]].push_back(edgeNewIds[1]);
+            mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][0]].push_back(interIds[0]);
+        }
+        if (mesh.nearPolygons[edgeOffIds[0]][1]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[0]][1]]==true){
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][1]].push_back(edgeNewIds[0]);
+            mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][1]].push_back(edgeNewIds[1]);
+            mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][1]].push_back(interIds[0]);
+        }
+        mesh.newedge[edgeOffIds[0]] = {edgeNewIds[0],edgeNewIds[1]};
     }
-    if (mesh.nearPolygons[edgeOffIds[0]][1]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[0]][1]]==true){
-        mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][1]].push_back(edgeNewIds[0]);
-        mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][1]].push_back(edgeNewIds[1]);
-        mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[0]][1]].push_back(interIds[0]);
-    }
-    mesh.newedge[edgeOffIds[0]] = {edgeNewIds[0],edgeNewIds[1]};
 
-    mesh.active_edge[edgeOffIds[1]] = false;
-    if (mesh.nearPolygons[edgeOffIds[1]][0]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[1]][0]]==true){
-        mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][0]].push_back(edgeNewIds[2]);
-        mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][0]].push_back(edgeNewIds[3]);
-        mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][0]].push_back(interIds[1]);
+    // se entrambe le inter coincidono coi vertici del lato che "tagliano"
+    else {
+
+        if (PointsDistance(puntiInterFraTra[0], mesh.coordVertices[edgeSpVert[0][0]])<tol){
+            interIds[0] = edgeSpVert[0][0];
+        }
+        else{
+            interIds[0] = edgeSpVert[0][1];
+        }
+
+        if (PointsDistance(puntiInterFraTra[1], mesh.coordVertices[edgeSpVert[1][0]])<tol){
+            interIds[1] = edgeSpVert[1][0];
+        }
+        else{
+            interIds[1] = edgeSpVert[1][1];
+        }
+
     }
-    if (mesh.nearPolygons[edgeOffIds[1]][1]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[1]][1]]==true){
-        mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][1]].push_back(edgeNewIds[2]);
-        mesh.edgesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][1]].push_back(edgeNewIds[3]);
-        mesh.verticesPolygonsFalse[mesh.nearPolygons[edgeOffIds[1]][1]].push_back(interIds[1]);
-    }
-    mesh.newedge[edgeOffIds[1]] = {edgeNewIds[2],edgeNewIds[3]};
 
     //salvo il lato-traccia
     idTraccia = countIdE;
@@ -601,7 +735,7 @@ void cutFracture(PolygonalMesh &mesh, unsigned int &polygonId, vector<unsigned i
         array<unsigned int, 2> interIds;
         array<unsigned int, 2> vertIdsHelp;
         unsigned int idTraccia;
-        InterFractureLine2(mesh, vertIds, rettaTraccia, vertIdsHelp, interIds, idTraccia, countIdV, countIdE, tol);
+        CutAndSave(mesh, vertIds, rettaTraccia, vertIdsHelp, interIds, idTraccia, countIdV, countIdE, tol);
 
         traces.erase(traces.begin());
 
@@ -614,21 +748,31 @@ void cutFracture(PolygonalMesh &mesh, unsigned int &polygonId, vector<unsigned i
         for (unsigned int i = 0; i < vertIds.size(); i++) {
 
             if (where){
-                vertIdsSub1.push_back(vertIds[i]);
+                if (find(vertIdsSub1.begin(), vertIdsSub1.end(), vertIds[i]) == vertIdsSub1.end()){
 
-                if (vertIds[i] - vertIdsHelp[0] < tol){
-                    where = false;
-                    vertIdsSub1.push_back(interIds[0]);
-                    vertIdsSub1.push_back(interIds[1]);
+                    vertIdsSub1.push_back(vertIds[i]);
+
+                    if (vertIds[i] - vertIdsHelp[0] < tol){
+                        where = false;
+                        if (PointsDistance(mesh.coordVertices[interIds[0]], mesh.coordVertices[vertIds[i]])>tol){
+                            vertIdsSub1.push_back(interIds[0]);
+                        }
+                        vertIdsSub1.push_back(interIds[1]);
+                    }
                 }
             }
             else if (!where){
-                vertIdsSub2.push_back(vertIds[i]);
+                if (find(vertIdsSub2.begin(), vertIdsSub2.end(), vertIds[i]) == vertIdsSub2.end()){
 
-                if (vertIds[i] - vertIdsHelp[1] < tol){
-                    where = true;
-                    vertIdsSub2.push_back(interIds[1]);
-                    vertIdsSub2.push_back(interIds[0]);
+                    vertIdsSub2.push_back(vertIds[i]);
+
+                    if (vertIds[i] - vertIdsHelp[1] < tol){
+                        where = true;
+                        if (PointsDistance(mesh.coordVertices[interIds[1]], mesh.coordVertices[vertIds[i]])>tol){
+                            vertIdsSub2.push_back(interIds[1]);
+                        }
+                        vertIdsSub2.push_back(interIds[0]);
+                    }
                 }
             }
 
@@ -706,7 +850,15 @@ void cutFracture(PolygonalMesh &mesh, unsigned int &polygonId, vector<unsigned i
             unsigned int j = (e + 1) % vertIdsSub1.size();
 
             Vector2i lato = {vertIdsSub1[e],vertIdsSub1[j]};
-            edgeIdsSub1[e] = distance(mesh.extremitiesEdges.begin(),find(mesh.extremitiesEdges.begin(), mesh.extremitiesEdges.end(), lato));
+            Vector2i lato2 = {vertIdsSub1[j],vertIdsSub1[e]};
+
+            if (find(mesh.extremitiesEdges.begin(), mesh.extremitiesEdges.end(), lato) != mesh.extremitiesEdges.end()){
+                edgeIdsSub1[e] = distance(mesh.extremitiesEdges.begin(),find(mesh.extremitiesEdges.begin(), mesh.extremitiesEdges.end(), lato));
+
+            }
+            else if (find(mesh.extremitiesEdges.begin(), mesh.extremitiesEdges.end(), lato2) != mesh.extremitiesEdges.end()){
+                edgeIdsSub1[e] = distance(mesh.extremitiesEdges.begin(),find(mesh.extremitiesEdges.begin(), mesh.extremitiesEdges.end(), lato2));
+            }
         }
 
         unsigned int polygonId1 = countIdP;
@@ -726,7 +878,15 @@ void cutFracture(PolygonalMesh &mesh, unsigned int &polygonId, vector<unsigned i
             unsigned int j = (e + 1) % vertIdsSub2.size();
 
             Vector2i lato = {vertIdsSub2[e],vertIdsSub2[j]};
-            edgeIdsSub2[e] = distance(mesh.extremitiesEdges.begin(),find(mesh.extremitiesEdges.begin(), mesh.extremitiesEdges.end(), lato));
+            Vector2i lato2 = {vertIdsSub2[j],vertIdsSub2[e]};
+
+            if (find(mesh.extremitiesEdges.begin(), mesh.extremitiesEdges.end(), lato) != mesh.extremitiesEdges.end()){
+                edgeIdsSub2[e] = distance(mesh.extremitiesEdges.begin(),find(mesh.extremitiesEdges.begin(), mesh.extremitiesEdges.end(), lato));
+
+            }
+            else if (find(mesh.extremitiesEdges.begin(), mesh.extremitiesEdges.end(), lato2) != mesh.extremitiesEdges.end()){
+                edgeIdsSub2[e] = distance(mesh.extremitiesEdges.begin(),find(mesh.extremitiesEdges.begin(), mesh.extremitiesEdges.end(), lato2));
+            }
         }
 
         unsigned int polygonId2 = countIdP;
@@ -745,13 +905,13 @@ void cutFracture(PolygonalMesh &mesh, unsigned int &polygonId, vector<unsigned i
         for (Trace& tra : traces){
             array<Vector3d, 2> estr = tra.extremitiesCoordinates;
 
-            int w1 = PositionVert(estr[0],rettaTraccia);
-            int w2 = PositionVert(estr[1],rettaTraccia);
+            int w1 = PositionVert(estr[0],rettaTraccia, tol);
+            int w2 = PositionVert(estr[1],rettaTraccia, tol);
 
             if (w1>tol && w2>tol){
                 tracesSub1.push_back(tra);
             }
-            if (w1<tol && w2<tol){
+            else if (w1<tol && w2<tol){
                 tracesSub2.push_back(tra);
             }
             else {
