@@ -26,30 +26,30 @@ pair<bool,Vector2d> InterFractureLine(Fracture &f1, array<Vector3d, 2> &r, doubl
 
 void FindTraces(vector<Fracture> &fractures, double tol, DFN &dfn);
 
-void printGlobalResults (const string& fileName, vector<Trace>& traces);
+void PrintGlobalResults (const string& fileName, vector<Trace>& traces);
 
-void printLocalResults (const string& fileName, vector<Fracture>& fractures, const vector<Trace>& traces);
+void PrintLocalResults (const string& fileName, vector<Fracture>& fractures, const vector<Trace>& traces);
 
-bool compareTraceLength(const unsigned int& id1, const unsigned int& id2, const std::vector<Trace>& traces);
+bool CompareTraceLength(const unsigned int& id1, const unsigned int& id2, const std::vector<Trace>& traces);
 
-void sortTracesByLength(vector<unsigned int>& vecIdTraces, const vector<Trace>& traces);
+void SortTracesByLength(vector<unsigned int>& vecIdTraces, const vector<Trace>& traces);
 
 }
 
 namespace PolygonalMeshLibrary{
 
-int PositionVert(const Vector3d& point, array<Vector3d,2> retta, double tol);
+int PositionVert(const Vector3d& point, array<Vector3d,2> line, double tol);
 
-void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2> &r, array<unsigned int, 2>& vertIdsHelp, array<unsigned int, 2>& interIds, double tol);
+void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2> &line, array<unsigned int, 2>& vertIdsHelp, array<unsigned int, 2>& pointsIntersIds, double tol);
 
-void cutFracture(PolygonalMesh &Mesh, DFN &dfn, unsigned int &polygonId, vector<unsigned int>& traces, double tol);
+void CutFracture(PolygonalMesh &Mesh, DFN &dfn, unsigned int &polygonId, vector<unsigned int>& traces, double tol);
 
-void turn(PolygonalMesh &mesh, unsigned int &polygonId, unsigned int &edgeId);
+void Turn(PolygonalMesh &mesh, unsigned int &polygonId, unsigned int &edgeId);
 
-void correctMesh(PolygonalMesh& mesh);
+void CorrectMesh(PolygonalMesh& mesh);
 
 void CreateMesh(vector<Fracture> &fractures, double tol, DFN &dfn, plm &plm);
 
-void tryOutput (const string& fileName, plm &plm);
+void TryOutput (const string& fileName, plm &plm);
 
 }

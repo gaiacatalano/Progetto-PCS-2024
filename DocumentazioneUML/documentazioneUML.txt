@@ -1,0 +1,120 @@
+@startuml
+package DFNLibrary <<Folder>>
+{
+class DFN
+{
+
++ fractureNumber: unsigned int
++ Fractures : vector<Fracture>
++ Traces : vector<Trace>
+
+..Non member function..
+
+bool ImportFractures(filePath, dfn, tol)
+double PointsDistance(p1, p2)
+void FindTraces(fractures, tol, dfn)
+
+..TEST DFN..
+
+TestImportFractures
+TestPointsDistance
+
+}
+
+class Fracture
+{
+
++ id : unsigned int
++ verticesNumber: unsigned int
++ verticesCoordinates: MatrixXd
++ barycenter: Vector3d
++ radius : double
++ normal : Vector3d
++ plane : Vector4d
++ passingTraces: vector<unsigned int>
++ notPassingTraces: vector<unsigned int> 
+
+..Non member function..
+
+bool Parallel(f1, f2, tol)
+bool IntersectionSphere(f1, f2, tol)
+array<Vector3d, 2> LineIntersection(f1, f2)
+pair<bool,Vector2d> InterFractureLine(f1, r, tol)
+void FindTraces(fractures, tol, dfn)
+array<Vector3d, 2> LineIntersection(f1, f2)
+pair<bool,Vector2d> InterFractureLine(f1, r, tol)
+void printLocalResults (fileName, vfractures, traces)
+
+..TEST FRACTURE..
+
+TestParallel
+TestIntersectionSphere
+TestLineIntersection
+TestInterFractureLine
+
+}
+
+class Trace
+{
+
++ id : unsigned int
++ extremitiesCoordinates : array <Vector3d, 2>
++ fracturesIds : array <unsigned int, 2>
++ length : double
++ lineTrace : array <Vector3d, 2>
+
+..Non member function..
+
+bool void printGlobalResults (fileName, traces)
+void printLocalResults (fileName, fractures, traces)
+bool compareTraceLength(id1, id2, traces)
+void sortTracesByLength(vecIdTraces, traces)
+void sortTracesByLength(vecIdTraces, traces)
+
+..TEST TRACE..
+
+TestFindTraces
+TestSort
+
+}
+
+DFN "1" o-- "many" Fracture : is made up of
+DFN "1" o-- "many" Trace : is made up of
+Fracture "1" o-- "many" Trace : contains
+
+}
+
+package PolygonalMeshLibrary<<Folder>>
+{
+
+class PolygonalMesh
+{
++ NumberCell0D : unsigned int
++ idVertices : vector<unsigned int>
++ coordVertices : vector<Vector3d>
++ NumberCell1D : unsigned int 
++ idEdges : vector<unsigned int>
++ extremitiesEdges : vector<Vector2i>
++ active_edge : vector<bool>
++ nearPolygons : vector<Vector2i>
++ newedge : vector<Vector2i> 
++ NumberCell2D : unsigned int
++ idPolygon : vector<unsigned int>
++ verticesPolygons : vector<vector<unsigned int>>
++ edgesPolygons : vector<vector<unsigned int>>
++ active_polygon : vector<bool> 
+
+..Non member function..
+
+int PositionVert(point, line, tol);
+void CutAndSave(mesh, polygonId, line , vertIdsHelp, interIds, tol);
+void cutFracture(PolygonalMesh &Mesh, DFN &dfn, unsigned int &polygonId, vector<unsigned int>& traces, double tol);
+void turn(&mesh, polygonId, edgeId);
+void correctMesh(mesh);
+void CreateMesh(fractures, tol, dfn, polygonalMesh);
+void tryOutput (fileName, plm);
+
+
+}
+
+@enduml

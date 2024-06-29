@@ -37,7 +37,7 @@ bool ImportFractures(const string& filePath, DFN& dfn, double tol) {
     convertFrac >> dfn.fractureNumber;
 
     // ridefinisco la dimensione del vettore di fratture in dfn
-    dfn.Fractures.resize(dfn.fractureNumber);
+    dfn.fractures.resize(dfn.fractureNumber);
 
     for (unsigned int i = 0; i < dfn.fractureNumber; i++) {
         Fracture fra;
@@ -104,7 +104,7 @@ bool ImportFractures(const string& filePath, DFN& dfn, double tol) {
         fra.plane = plane;
 
         // salvo la frattura nel vettore delle fratture
-        dfn.Fractures[i] = fra;
+        dfn.fractures[i] = fra;
     }
 
     file.close();
@@ -341,7 +341,7 @@ void FindTraces(vector<Fracture> &fractures, double tol, DFN &dfn)
                 tr.extremitiesCoordinates = estremiTraccia;
                 tr.fracturesIds = {f1.id,f2.id};
                 tr.length = length;
-                tr.Tips = tips;
+                tr.tips = tips;
                 tr.lineTrace = rettaf1xf2;
 
                 if(tips[0]){
@@ -359,7 +359,7 @@ void FindTraces(vector<Fracture> &fractures, double tol, DFN &dfn)
                     f2.passingTraces.push_back(tr.idTrace);
                 }
 
-                dfn.Traces.push_back(tr);
+                dfn.traces.push_back(tr);
                 count++;
             }
 
@@ -367,7 +367,7 @@ void FindTraces(vector<Fracture> &fractures, double tol, DFN &dfn)
     }
 }
 
-void printGlobalResults (const string& fileName, vector<Trace>& traces){ // primo file di ouput, con le informazioni sulle tracce
+void PrintGlobalResults (const string& fileName, vector<Trace>& traces){ // primo file di ouput, con le informazioni sulle tracce
     ofstream ofstr(fileName); // se il file non esiste, lo crea
     ofstr << "# Number of Traces" << endl;
     ofstr << traces.size() << endl;
@@ -380,7 +380,7 @@ void printGlobalResults (const string& fileName, vector<Trace>& traces){ // prim
     ofstr.close();
 }
 
-void printLocalResults (const string& fileName, vector<Fracture>& fractures, const vector<Trace>& traces)
+void PrintLocalResults (const string& fileName, vector<Fracture>& fractures, const vector<Trace>& traces)
 {
     // secondo file di ouput, con le informazioni sulle fratture e sulle tracce corrispondenti
     ofstream ofstr(fileName);
@@ -389,8 +389,8 @@ void printLocalResults (const string& fileName, vector<Fracture>& fractures, con
         firstTime=true;
         ofstr << "# FractureId; NumTraces" << endl;
         ofstr << fr.id << "; " << (fr.passingTraces.size())+(fr.notPassingTraces.size()) << endl;
-        sortTracesByLength(fr.passingTraces, traces); // ordino le tracce passanti per lunghezza decrescente
-        sortTracesByLength(fr.notPassingTraces, traces); // ordino le tracce non passanti per lunghezza decrescente
+        SortTracesByLength(fr.passingTraces, traces); // ordino le tracce passanti per lunghezza decrescente
+        SortTracesByLength(fr.notPassingTraces, traces); // ordino le tracce non passanti per lunghezza decrescente
         for (unsigned int idTrace:fr.passingTraces){
             if (firstTime){
                 ofstr << "# TraceId; Tips; Length" << endl;
@@ -410,13 +410,13 @@ void printLocalResults (const string& fileName, vector<Fracture>& fractures, con
     ofstr.close();
 }
 
-bool compareTraceLength(const unsigned int& id1, const unsigned int& id2, const vector<Trace>& traces) {
+bool CompareTraceLength(const unsigned int& id1, const unsigned int& id2, const vector<Trace>& traces) {
     return traces[id1].length > traces[id2].length; // > per ordine decrescente
 }
 
-void sortTracesByLength(vector<unsigned int>& vecIdTraces, const vector<Trace>& traces) {
+void SortTracesByLength(vector<unsigned int>& vecIdTraces, const vector<Trace>& traces) {
     sort(vecIdTraces.begin(), vecIdTraces.end(), [&traces](const unsigned int& id1, const unsigned int& id2) {
-        return compareTraceLength(id1, id2, traces);
+        return CompareTraceLength(id1, id2, traces);
     });
 }
 }
@@ -842,7 +842,7 @@ void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2>
 
 }
 
-void cutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<unsigned int>& traces, double tol){
+void CutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<unsigned int>& traces, double tol){
 
     if (!traces.empty()){
         // 1) Utilizzare la funzione InterFractureLine per trovare i punti di intersezione della
@@ -854,7 +854,7 @@ void cutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<
         mesh.active_polygon[polygonId] = false;
 
         unsigned int traId = traces.front();
-        Trace tra = dfn.Traces[traId];
+        Trace tra = dfn.traces[traId];
 
         //assert (dfn.Traces[traId].idTrace == traId);
 
@@ -1066,7 +1066,7 @@ void cutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<
 
         for (unsigned int& traId : traces){
 
-            Trace tra = dfn.Traces[traId];
+            Trace tra = dfn.traces[traId];
             // Trace tra;
 
             // for (unsigned int p=0; p<dfn.Traces.size(); p++){
@@ -1118,16 +1118,15 @@ void cutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<
         */
 
         // richiamo la funzione per le sottofratture fino alla fine delle tracce
-        cutFracture(mesh, dfn, polygonId1, tracesSub1, tol);
-        cutFracture(mesh, dfn, polygonId2, tracesSub2, tol);
+        CutFracture(mesh, dfn, polygonId1, tracesSub1, tol);
+        CutFracture(mesh, dfn, polygonId2, tracesSub2, tol);
     }
 
 }
 
-
-void turn(PolygonalMesh &mesh, unsigned int &polygonId, unsigned int &edgeId){
+void Turn(PolygonalMesh &mesh, unsigned int &polygonId, unsigned int &edgeId){
     if (mesh.active_edge[edgeId]==true){
-        // mesh.edgesPolygons[polygonId].push_back(edgeId);
+        //mesh.edgesPolygons[polygonId].push_back(edgeId);
 
         for (unsigned int i=0; i<2; i++){
             unsigned int vertEdgeId = mesh.extremitiesEdges[edgeId][i];
@@ -1141,35 +1140,33 @@ void turn(PolygonalMesh &mesh, unsigned int &polygonId, unsigned int &edgeId){
         unsigned int e1 = mesh.newedge[edgeId][0];
         unsigned int e2 = mesh.newedge[edgeId][1];
 
-        turn(mesh,polygonId,e1);
-        turn(mesh,polygonId,e2);
+        Turn(mesh,polygonId,e1);
+        Turn(mesh,polygonId,e2);
     }
 }
 
+void CorrectMesh(PolygonalMesh& mesh){
 
-void correctMesh(PolygonalMesh& mesh){
-
-    mesh.NumberCell0D = mesh.idVertices.size();
+    mesh.numberCell0D = mesh.idVertices.size();
 
     for (unsigned int i=0; i<mesh.idEdges.size(); i++){
         if (mesh.active_edge[i]==true){
-            mesh.NumberCell1D++;
+            mesh.numberCell1D++;
         }
     }
 
     for (unsigned int i=0; i<mesh.idPolygon.size(); i++){
         if (mesh.active_polygon[i]==true){
-            mesh.NumberCell2D++;
+            mesh.numberCell2D++;
 
             for (unsigned int l=0; l<mesh.edgesPolygons[i].size(); l++){
                 unsigned int edgeIdX = mesh.edgesPolygons[i][l];
-                turn(mesh,i,edgeIdX);
+                Turn(mesh,i,edgeIdX);
             }
 
         }
     }
 }
-
 
 void CreateMesh(vector<Fracture>& fractures, double tol, DFN &dfn, plm &plm){
 
@@ -1291,9 +1288,9 @@ void CreateMesh(vector<Fracture>& fractures, double tol, DFN &dfn, plm &plm){
         mesh.active_polygon[0] = true;
 
 
-        cutFracture(mesh, dfn, mesh.idPolygon[0], allidT, tol);
+        CutFracture(mesh, dfn, mesh.idPolygon[0], allidT, tol);
 
-        correctMesh(mesh);
+        CorrectMesh(mesh);
 
         plm.meshes.push_back(mesh);
 
@@ -1301,23 +1298,23 @@ void CreateMesh(vector<Fracture>& fractures, double tol, DFN &dfn, plm &plm){
     }
 }
 
-void tryOutput (const string& fileName, plm &plm){ // primo file di ouput, con le informazioni sulle tracce
+void TryOutput (const string& fileName, plm &plm){ // primo file di ouput, con le informazioni sulle tracce
     ofstream ofstr(fileName); // se il file non esiste, lo crea
     ofstr << "# Number of Meshes" << endl;
     ofstr << plm.meshes.size() << endl;
     for (PolygonalMesh& meh: plm.meshes){
 
         ofstr << "# Number of Vertices" << endl;
-        ofstr << meh.NumberCell0D << endl;
+        ofstr << meh.numberCell0D << endl;
         ofstr << "# IdVertici; X1; Y1; Z1" << endl;
-        for (unsigned int i=0;i<meh.NumberCell0D;i++)
+        for (unsigned int i=0;i<meh.numberCell0D;i++)
             ofstr << meh.idVertices[i] << "; " << meh.coordVertices[i][0] << "; " << meh.coordVertices[i][1]
                   << "; " << meh.coordVertices[i][2] << endl;
 
         ofstr << "# Number of Edges" << endl;
 
         unsigned int numEdge = 0;
-        for (unsigned int i=0;i<meh.NumberCell1D;i++){
+        for (unsigned int i=0;i<meh.numberCell1D;i++){
             if (meh.active_edge[i]==true){
                 numEdge++;
             }
@@ -1325,7 +1322,7 @@ void tryOutput (const string& fileName, plm &plm){ // primo file di ouput, con l
 
         ofstr << numEdge << endl;
         ofstr << "# IdEdges; IdVertices1, IdVertices2" << endl;
-        for (unsigned int i=0;i<meh.NumberCell1D;i++){
+        for (unsigned int i=0;i<meh.numberCell1D;i++){
             if (meh.active_edge[i]==true){
             ofstr << meh.idEdges[i] << "; " << meh.extremitiesEdges[i][0] << "; " << meh.extremitiesEdges[i][1] << endl;
             }
@@ -1333,7 +1330,7 @@ void tryOutput (const string& fileName, plm &plm){ // primo file di ouput, con l
 
         ofstr << "# Number of Polygons" << endl;
         unsigned int numPoly = 0;
-        for (unsigned int i=0;i<meh.NumberCell2D;i++){
+        for (unsigned int i=0;i<meh.numberCell2D;i++){
             if (meh.active_polygon[i]==true){
                 numPoly++;
             }

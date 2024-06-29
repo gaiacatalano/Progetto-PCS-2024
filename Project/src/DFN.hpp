@@ -14,7 +14,7 @@ namespace DiscreteFractureNetworkLibrary{
 
 struct Fracture
 {
-    int id = 0;                                     // id frattura
+    unsigned int id = 0;                            // id frattura
     unsigned int verticesNumber = 0;                // numero di vertici
     MatrixXd verticesCoordinates = {};              // coordinate dei vertici
     Vector3d barycenter = {};                       // baricentro (coordinate)
@@ -29,17 +29,17 @@ struct Trace
 {
     unsigned int idTrace;                             // id traccia
     array <Vector3d, 2> extremitiesCoordinates = {};  // array delle coordinate dei punti estremi della traccia
-    array <int, 2> fracturesIds = {};                 // array degli id delle due fratture che formano la traccia
+    array <unsigned int, 2> fracturesIds = {};        // array degli id delle due fratture che formano la traccia
     double length = 0;                                // lunghezza della traccia (distanza estremità)
-    array<bool,2> Tips = {};                          // false se passante, true se non passante (prima e seconda frattura)
+    array<bool,2> tips = {};                          // false se passante, true se non passante (prima e seconda frattura)
     array <Vector3d, 2> lineTrace = {};               // retta contenente la traccia (punto e direzione)
 };
 
 struct DFN
 {
     unsigned int fractureNumber = 0;      // numero di fratture
-    vector<Fracture> Fractures = {};      // vettore di fratture
-    vector<Trace> Traces = {};            // vettore di tracce
+    vector<Fracture> fractures = {};      // vettore di fratture
+    vector<Trace> traces = {};            // vettore di tracce
 };
 
 }

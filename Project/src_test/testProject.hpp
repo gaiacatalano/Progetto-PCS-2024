@@ -31,14 +31,14 @@ TEST(IMPORTTEST, TestImportFractures) {
     ASSERT_TRUE(b);
     ASSERT_FALSE(c);
     EXPECT_EQ(dfn.fractureNumber, 8);
-    EXPECT_EQ(dfn.Fractures[0].verticesNumber,4);
-    EXPECT_EQ(dfn.Fractures[1].verticesNumber,4);
-    EXPECT_EQ(dfn.Fractures[2].verticesNumber,4);
-    EXPECT_EQ(dfn.Fractures[3].verticesNumber,4);
-    EXPECT_EQ(dfn.Fractures[4].verticesNumber,4);
-    EXPECT_EQ(dfn.Fractures[5].verticesNumber,3);
-    EXPECT_EQ(dfn.Fractures[6].verticesNumber,3);
-    EXPECT_EQ(dfn.Fractures[7].verticesNumber,4);
+    EXPECT_EQ(dfn.fractures[0].verticesNumber,4);
+    EXPECT_EQ(dfn.fractures[1].verticesNumber,4);
+    EXPECT_EQ(dfn.fractures[2].verticesNumber,4);
+    EXPECT_EQ(dfn.fractures[3].verticesNumber,4);
+    EXPECT_EQ(dfn.fractures[4].verticesNumber,4);
+    EXPECT_EQ(dfn.fractures[5].verticesNumber,3);
+    EXPECT_EQ(dfn.fractures[6].verticesNumber,3);
+    EXPECT_EQ(dfn.fractures[7].verticesNumber,4);
 
 
     Matrix<double, 3, 4> vm0 {
@@ -74,14 +74,14 @@ TEST(IMPORTTEST, TestImportFractures) {
     };
 
 
-     EXPECT_LT((vm0-dfn.Fractures[0].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm1-dfn.Fractures[1].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm2-dfn.Fractures[2].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm3-dfn.Fractures[3].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm4-dfn.Fractures[4].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm5-dfn.Fractures[5].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm6-dfn.Fractures[6].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm7-dfn.Fractures[7].verticesCoordinates).norm(), tol);
+     EXPECT_LT((vm0-dfn.fractures[0].verticesCoordinates).norm(), tol);
+     EXPECT_LT((vm1-dfn.fractures[1].verticesCoordinates).norm(), tol);
+     EXPECT_LT((vm2-dfn.fractures[2].verticesCoordinates).norm(), tol);
+     EXPECT_LT((vm3-dfn.fractures[3].verticesCoordinates).norm(), tol);
+     EXPECT_LT((vm4-dfn.fractures[4].verticesCoordinates).norm(), tol);
+     EXPECT_LT((vm5-dfn.fractures[5].verticesCoordinates).norm(), tol);
+     EXPECT_LT((vm6-dfn.fractures[6].verticesCoordinates).norm(), tol);
+     EXPECT_LT((vm7-dfn.fractures[7].verticesCoordinates).norm(), tol);
 
 
     Vector3d b0(2, 0, 0);
@@ -94,14 +94,14 @@ TEST(IMPORTTEST, TestImportFractures) {
     Vector3d b7(2, -1, 0);
 
 
-    EXPECT_LT((b0-dfn.Fractures[0].barycenter).norm(), tol);
-    EXPECT_LT((b1-dfn.Fractures[1].barycenter).norm(), tol);
-    EXPECT_LT((b2-dfn.Fractures[2].barycenter).norm(), tol);
-    EXPECT_LT((b3-dfn.Fractures[3].barycenter).norm(), tol);
-    EXPECT_LT((b4-dfn.Fractures[4].barycenter).norm(), tol);
-    EXPECT_LT((b5-dfn.Fractures[5].barycenter).norm(), tol);
-    EXPECT_LT((b6-dfn.Fractures[6].barycenter).norm(), tol);
-    EXPECT_LT((b7-dfn.Fractures[7].barycenter).norm(), tol);
+    EXPECT_LT((b0-dfn.fractures[0].barycenter).norm(), tol);
+    EXPECT_LT((b1-dfn.fractures[1].barycenter).norm(), tol);
+    EXPECT_LT((b2-dfn.fractures[2].barycenter).norm(), tol);
+    EXPECT_LT((b3-dfn.fractures[3].barycenter).norm(), tol);
+    EXPECT_LT((b4-dfn.fractures[4].barycenter).norm(), tol);
+    EXPECT_LT((b5-dfn.fractures[5].barycenter).norm(), tol);
+    EXPECT_LT((b6-dfn.fractures[6].barycenter).norm(), tol);
+    EXPECT_LT((b7-dfn.fractures[7].barycenter).norm(), tol);
 
     Vector3d n0(0, 0, 1);
     Vector3d n1(0, 0, 1);
@@ -112,14 +112,14 @@ TEST(IMPORTTEST, TestImportFractures) {
     Vector3d n6(-1, 0, -2);
     Vector3d n7(0, 0, 1);
 
-    EXPECT_LT((dfn.Fractures[0].normal.cross(n0)).norm(), tol);
-    EXPECT_LT((dfn.Fractures[1].normal.cross(n1)).norm(), tol);
-    EXPECT_LT((dfn.Fractures[2].normal.cross(n2)).norm(), tol);
-    EXPECT_LT((dfn.Fractures[3].normal.cross(n3)).norm(), tol);
-    EXPECT_LT((dfn.Fractures[4].normal.cross(n4)).norm(), tol);
-    EXPECT_LT((dfn.Fractures[5].normal.cross(n5)).norm(), tol);
-    EXPECT_LT((dfn.Fractures[6].normal.cross(n6)).norm(), tol);
-    EXPECT_LT((dfn.Fractures[7].normal.cross(n7)).norm(), tol);
+    EXPECT_LT((dfn.fractures[0].normal.cross(n0)).norm(), tol);
+    EXPECT_LT((dfn.fractures[1].normal.cross(n1)).norm(), tol);
+    EXPECT_LT((dfn.fractures[2].normal.cross(n2)).norm(), tol);
+    EXPECT_LT((dfn.fractures[3].normal.cross(n3)).norm(), tol);
+    EXPECT_LT((dfn.fractures[4].normal.cross(n4)).norm(), tol);
+    EXPECT_LT((dfn.fractures[5].normal.cross(n5)).norm(), tol);
+    EXPECT_LT((dfn.fractures[6].normal.cross(n6)).norm(), tol);
+    EXPECT_LT((dfn.fractures[7].normal.cross(n7)).norm(), tol);
 
 
 
@@ -151,9 +151,9 @@ TEST(DISTANCETEST, TestPointsDistance){
 TEST(DISTANCETEST, TestParallel) {
     DFN dfn;
     ImportFractures("DFN/FR8_test.txt", dfn, tol);
-    Fracture f0 = dfn.Fractures[0];
-    Fracture f1 = dfn.Fractures[1];
-    Fracture f3 = dfn.Fractures[3];
+    Fracture f0 = dfn.fractures[0];
+    Fracture f1 = dfn.fractures[1];
+    Fracture f3 = dfn.fractures[3];
     EXPECT_TRUE(Parallel(f0, f1, tol));
     EXPECT_FALSE(Parallel(f0, f3, tol));
 }
@@ -161,10 +161,10 @@ TEST(DISTANCETEST, TestParallel) {
 TEST(DISTANCETEST, TestIntersectionSphere) {
     DFN dfn;
     ImportFractures("DFN/FR8_test.txt", dfn, tol);
-    Fracture f0 = dfn.Fractures[0];
-    Fracture f1 = dfn.Fractures[1];
-    Fracture f2 = dfn.Fractures[2];
-    Fracture f4 = dfn.Fractures[4];
+    Fracture f0 = dfn.fractures[0];
+    Fracture f1 = dfn.fractures[1];
+    Fracture f2 = dfn.fractures[2];
+    Fracture f4 = dfn.fractures[4];
     EXPECT_TRUE(IntersectionSphere(f2, f4, tol));
     EXPECT_FALSE(IntersectionSphere(f0, f1, tol));
 }
@@ -176,8 +176,8 @@ TEST(TRACESTEST, TestLineIntersection)
 {
     DFN dfn;
     ImportFractures("DFN/FR8_test.txt", dfn, tol);
-    Fracture f1 = dfn.Fractures[1];
-    Fracture f3 = dfn.Fractures[3];
+    Fracture f1 = dfn.fractures[1];
+    Fracture f3 = dfn.fractures[3];
     Vector3d prod = LineIntersection(f1, f3)[1].cross(v);
     EXPECT_LT(prod.norm(), tol);
 }
@@ -186,9 +186,9 @@ TEST(TRACESTEST, TestInterFractureLine)
 {
     DFN dfn;
     ImportFractures("DFN/FR8_test.txt", dfn, tol);
-    Fracture f3 = dfn.Fractures[3];
-    Fracture f5 = dfn.Fractures[5];
-    Fracture f6 = dfn.Fractures[6];
+    Fracture f3 = dfn.fractures[3];
+    Fracture f5 = dfn.fractures[5];
+    Fracture f6 = dfn.fractures[6];
     Vector3d E(0, -2, 2);
     array<Vector3d, 2> r = {E, v};  // retta EH
     pair<bool, Vector2d> a = InterFractureLine(f6, r, tol);
@@ -205,15 +205,15 @@ TEST(TRACESTEST, TestFindTraces)
 {
     DFN dfn;
     ImportFractures("DFN/FR8_test.txt", dfn, tol);
-    FindTraces(dfn.Fractures,tol,dfn);
-    Fracture f0 = dfn.Fractures[0];
-    Fracture f1 = dfn.Fractures[1];
-    Fracture f2 = dfn.Fractures[2];
-    Fracture f3 = dfn.Fractures[3];
-    Fracture f4 = dfn.Fractures[4];
-    Fracture f5 = dfn.Fractures[5];
-    Fracture f6 = dfn.Fractures[6];
-    Fracture f7 = dfn.Fractures[7];
+    FindTraces(dfn.fractures,tol,dfn);
+    Fracture f0 = dfn.fractures[0];
+    Fracture f1 = dfn.fractures[1];
+    Fracture f2 = dfn.fractures[2];
+    Fracture f3 = dfn.fractures[3];
+    Fracture f4 = dfn.fractures[4];
+    Fracture f5 = dfn.fractures[5];
+    Fracture f6 = dfn.fractures[6];
+    Fracture f7 = dfn.fractures[7];
 
 
     // controllo che f4 non abbia tracce (quindi che non ne abbia anche con f6)
@@ -247,7 +247,7 @@ TEST(TRACESTEST, TestSort){
 
     vector<Trace> trs = {a, b};
 
-    sortTracesByLength(ids, trs);
+    SortTracesByLength(ids, trs);
     vector<unsigned int> w = {0, 1};
     EXPECT_TRUE(w == ids);
 

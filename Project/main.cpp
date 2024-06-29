@@ -13,8 +13,8 @@ int main()
     DFN dfn;
     plm plm;
 
-    string path = "DFN/FR3_data.txt";
-    double tol=10*numeric_limits<double>::epsilon();
+    string path = "DFN/FR10_data.txt";
+    double tol = 10*numeric_limits<double>::epsilon();
 
     //cout << "Insert file path: ";
     //cin >> path;
@@ -27,7 +27,7 @@ int main()
     {
         cout << "Il numero di fratture del DFN e': " << dfn.fractureNumber << endl;
         for(unsigned int i=0; i<dfn.fractureNumber; i++){
-            Fracture fract = dfn.Fractures[i];
+            Fracture fract = dfn.fractures[i];
             cout << "L'Id della frattura e': " << fract.id << " e ha "<< fract.verticesNumber << " vertici" << endl;
             cout << "Le coordinate dei vertici sono: " << endl;
             for(unsigned int j=0; j<3; j++){
@@ -44,16 +44,16 @@ int main()
         }
     }
 
-    FindTraces(dfn.Fractures,tol,dfn);
-    cout << "Il numero di tracce e': " << dfn.Traces.size() << endl;
+    FindTraces(dfn.fractures,tol,dfn);
+    cout << "Il numero di tracce e': " << dfn.traces.size() << endl;
 
-    printGlobalResults("results.txt", dfn.Traces);
-    printLocalResults("lresults.txt",dfn.Fractures,dfn.Traces);
+    PrintGlobalResults("results.txt", dfn.traces);
+    PrintLocalResults("lresults.txt",dfn.fractures,dfn.traces);
 
-    CreateMesh(dfn.Fractures,tol,dfn,plm);
+    CreateMesh(dfn.fractures,tol,dfn,plm);
 
     for(unsigned int i=0; i<plm.meshes.size(); i++){
-       cout << "Numero di celle 2D: " << plm.meshes[i].NumberCell2D << endl;
+       cout << "Numero di celle 2D: " << plm.meshes[i].numberCell2D << endl;
     }
 
     cout << "Print di prova" << endl;

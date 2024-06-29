@@ -13,11 +13,11 @@ namespace PolygonalMeshLibrary{
 
 struct PolygonalMesh{
 
-    unsigned int NumberCell0D = 0;
+    unsigned int numberCell0D = 0;
     vector<unsigned int> idVertices = {};
     vector<Vector3d> coordVertices = {};
 
-    unsigned int NumberCell1D = 0;
+    unsigned int numberCell1D = 0;
     vector<unsigned int> idEdges = {};
     vector<Vector2i> extremitiesEdges = {};
     vector<bool> active_edge = {};
@@ -25,7 +25,7 @@ struct PolygonalMesh{
     vector<Vector2i> newedge = {};
 
 
-    unsigned int NumberCell2D = 0;
+    unsigned int numberCell2D = 0;
     vector<unsigned int> idPolygon = {};
     vector<vector<unsigned int>> verticesPolygons = {};
     vector<vector<unsigned int>> edgesPolygons = {};
