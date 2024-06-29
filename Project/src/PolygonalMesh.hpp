@@ -27,8 +27,6 @@ struct PolygonalMesh{
 
     unsigned int NumberCell2D = 0;
     vector<unsigned int> idPolygon = {};
-    vector<vector<unsigned int>> verticesPolygonsFalse = {};
-    vector<vector<unsigned int>> edgesPolygonsFalse = {};
     vector<vector<unsigned int>> verticesPolygons = {};
     vector<vector<unsigned int>> edgesPolygons = {};
     vector<bool> active_polygon = {};

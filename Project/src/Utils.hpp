@@ -40,9 +40,9 @@ namespace PolygonalMeshLibrary{
 
 int PositionVert(const Vector3d& point, array<Vector3d,2> retta, double tol);
 
-void CutAndSave(PolygonalMesh &mesh, vector<unsigned int> &vertIds, array<Vector3d, 2> &r, array<unsigned int, 2>& vertIdsHelp, array<unsigned int, 2>& interIds, unsigned int countIdV, unsigned int countIdE, double tol);
+void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2> &r, array<unsigned int, 2>& vertIdsHelp, array<unsigned int, 2>& interIds, double tol);
 
-void cutFracture(PolygonalMesh &Mesh, unsigned int &polygonId, vector<unsigned int>& vertCoor, vector<Trace>& traces, unsigned int countIdV, unsigned int countIdE, unsigned int countIdP, double tol);
+void cutFracture(PolygonalMesh &Mesh, DFN &dfn, unsigned int &polygonId, vector<unsigned int>& traces, double tol);
 
 void turn(PolygonalMesh &mesh, unsigned int &polygonId, unsigned int &edgeId);
 
