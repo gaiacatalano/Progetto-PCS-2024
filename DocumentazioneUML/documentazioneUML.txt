@@ -8,11 +8,10 @@ class DFN
 + Fractures : vector<Fracture>
 + Traces : vector<Trace>
 
-..Non member function..
 
-bool ImportFractures(filePath, dfn, tol)
-double PointsDistance(p1, p2)
-void FindTraces(fractures, tol, dfn)
++bool ImportFractures(filePath, dfn, tol)
++double PointsDistance(p1, p2)
++void FindTraces(fractures, tol, dfn)
 
 ..TEST DFN..
 
@@ -34,16 +33,15 @@ class Fracture
 + passingTraces: vector<unsigned int>
 + notPassingTraces: vector<unsigned int> 
 
++array<Vector3d, 2> LineIntersection(f1, f2)
++pair<bool,Vector2d> InterFractureLine(f1, r, tol)
++void FindTraces(fractures, tol, dfn)
++void PrintLocalResults (fileName, vfractures, traces)
+
 ..Non member function..
 
-bool Parallel(f1, f2, tol)
-bool IntersectionSphere(f1, f2, tol)
-array<Vector3d, 2> LineIntersection(f1, f2)
-pair<bool,Vector2d> InterFractureLine(f1, r, tol)
-void FindTraces(fractures, tol, dfn)
-array<Vector3d, 2> LineIntersection(f1, f2)
-pair<bool,Vector2d> InterFractureLine(f1, r, tol)
-void printLocalResults (fileName, vfractures, traces)
++bool Parallel(f1, f2, tol)
++bool IntersectionSphere(f1, f2, tol)
 
 ..TEST FRACTURE..
 
@@ -63,13 +61,11 @@ class Trace
 + length : double
 + lineTrace : array <Vector3d, 2>
 
-..Non member function..
++bool void PrintGlobalResults (fileName, traces)
++void PrintLocalResults (fileName, fractures, traces)
++bool CompareTraceLength(id1, id2, traces)
++void SortTracesByLength(vecIdTraces, traces)
 
-bool void printGlobalResults (fileName, traces)
-void printLocalResults (fileName, fractures, traces)
-bool compareTraceLength(id1, id2, traces)
-void sortTracesByLength(vecIdTraces, traces)
-void sortTracesByLength(vecIdTraces, traces)
 
 ..TEST TRACE..
 
@@ -89,6 +85,7 @@ package PolygonalMeshLibrary<<Folder>>
 
 class PolygonalMesh
 {
+
 + NumberCell0D : unsigned int
 + idVertices : vector<unsigned int>
 + coordVertices : vector<Vector3d>
@@ -104,17 +101,25 @@ class PolygonalMesh
 + edgesPolygons : vector<vector<unsigned int>>
 + active_polygon : vector<bool> 
 
-..Non member function..
 
-int PositionVert(point, line, tol);
-void CutAndSave(mesh, polygonId, line , vertIdsHelp, interIds, tol);
-void cutFracture(PolygonalMesh &Mesh, DFN &dfn, unsigned int &polygonId, vector<unsigned int>& traces, double tol);
-void turn(&mesh, polygonId, edgeId);
-void correctMesh(mesh);
-void CreateMesh(fractures, tol, dfn, polygonalMesh);
-void tryOutput (fileName, plm);
-
++int PositionVert(point, line, tol);
++void CutAndSave(mesh, polygonId, line , vertIdsHelp, interIds, tol);
++void CutFracture(mesh, dfn, polygonId, traces, tol);
++void Turn(&mesh, polygonId, edgeId);
++void CorrectMesh(mesh);
++void CreateMesh(fractures, tol, dfn, meshes);
 
 }
+
+class Meshes{
+
++ meshes : vector<PolygonalMesh> 
+
++ void CreateMesh(fractures, tol, dfn, meshes);
++ void PrintMeshes (fileName, meshes);
+
+}
+Meshes"1" o-- "many" PolygonalMesh: is made up of
+
 
 @enduml

@@ -1168,7 +1168,7 @@ void CorrectMesh(PolygonalMesh& mesh){
     }
 }
 
-void CreateMesh(vector<Fracture>& fractures, double tol, DFN &dfn, plm &plm){
+void CreateMesh(vector<Fracture>& fractures, double tol, DFN &dfn, Meshes &meshesV){
 
     for (unsigned int i=0; i<fractures.size(); i++)
     {
@@ -1292,17 +1292,17 @@ void CreateMesh(vector<Fracture>& fractures, double tol, DFN &dfn, plm &plm){
 
         CorrectMesh(mesh);
 
-        plm.meshes.push_back(mesh);
+        meshesV.meshes.push_back(mesh);
 
 
     }
 }
 
-void TryOutput (const string& fileName, plm &plm){ // primo file di ouput, con le informazioni sulle tracce
+void PrintMeshes (const string& fileName, Meshes &meshesV){ // primo file di ouput, con le informazioni sulle tracce
     ofstream ofstr(fileName); // se il file non esiste, lo crea
     ofstr << "# Number of Meshes" << endl;
-    ofstr << plm.meshes.size() << endl;
-    for (PolygonalMesh& meh: plm.meshes){
+    ofstr << meshesV.meshes.size() << endl;
+    for (PolygonalMesh& meh: meshesV.meshes){
 
         ofstr << "# Number of Vertices" << endl;
         ofstr << meh.numberCell0D << endl;

@@ -33,7 +33,7 @@ struct PolygonalMesh{
 
 };
 
-struct plm{
+struct Meshes {
     vector<PolygonalMesh> meshes = {};
 };
 

@@ -48,8 +48,8 @@ void Turn(PolygonalMesh &mesh, unsigned int &polygonId, unsigned int &edgeId);
 
 void CorrectMesh(PolygonalMesh& mesh);
 
-void CreateMesh(vector<Fracture> &fractures, double tol, DFN &dfn, plm &plm);
+void CreateMesh(vector<Fracture> &fractures, double tol, DFN &dfn, Meshes &meshesV);
 
-void TryOutput (const string& fileName, plm &plm);
+void PrintMeshes (const string& fileName, Meshes &meshesV);
 
 }

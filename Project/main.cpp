@@ -11,7 +11,7 @@ using namespace PolygonalMeshLibrary;
 int main()
 {
     DFN dfn;
-    plm plm;
+    Meshes plm;
 
     string path = "DFN/FR10_data.txt";
     double tol = 10*numeric_limits<double>::epsilon();
@@ -58,7 +58,7 @@ int main()
 
     cout << "Print di prova" << endl;
 
-    //tryOutput("try.txt",plm);
+    PrintMeshes("meshes.txt",plm);
 
     return 0;
 }
