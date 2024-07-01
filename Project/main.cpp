@@ -13,11 +13,11 @@ int main()
     DFN dfn;
     Meshes plm;
 
-    string path = "DFN/FR10_data.txt";
+    string path;
     double tol = 10*numeric_limits<double>::epsilon();
 
-    //cout << "Insert file path: ";
-    //cin >> path;
+    cout << "Insert file path (ex: DFN/FR10_data.txt): ";
+    cin >> path;
 
     if(!ImportFractures(path, dfn, tol))
     {

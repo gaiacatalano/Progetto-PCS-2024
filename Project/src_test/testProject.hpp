@@ -17,8 +17,6 @@ using namespace DiscreteFractureNetworkLibrary;
 double tol=10*numeric_limits<double>::epsilon();
 
 
-// ASSERT quando la condizione deve valere, altrimenti il test non può continuare;
-// EXPECT se non è necessaria per continuare
 
 TEST(IMPORTTEST, TestImportFractures) {
     string path = "DFN/FR8_test.txt";
@@ -73,17 +71,6 @@ TEST(IMPORTTEST, TestImportFractures) {
         {0, 4, 4, 0}, {-2, -2, 0, 0}, {0, 0, 0, 0}
     };
 
-
-<<<<<<< Updated upstream
-     EXPECT_LT((vm0-dfn.fractures[0].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm1-dfn.fractures[1].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm2-dfn.fractures[2].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm3-dfn.fractures[3].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm4-dfn.fractures[4].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm5-dfn.fractures[5].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm6-dfn.fractures[6].verticesCoordinates).norm(), tol);
-     EXPECT_LT((vm7-dfn.fractures[7].verticesCoordinates).norm(), tol);
-=======
     EXPECT_LT((vm0-dfn.fractures[0].verticesCoordinates).norm(), tol);
     EXPECT_LT((vm1-dfn.fractures[1].verticesCoordinates).norm(), tol);
     EXPECT_LT((vm2-dfn.fractures[2].verticesCoordinates).norm(), tol);
@@ -92,8 +79,6 @@ TEST(IMPORTTEST, TestImportFractures) {
     EXPECT_LT((vm5-dfn.fractures[5].verticesCoordinates).norm(), tol);
     EXPECT_LT((vm6-dfn.fractures[6].verticesCoordinates).norm(), tol);
     EXPECT_LT((vm7-dfn.fractures[7].verticesCoordinates).norm(), tol);
->>>>>>> Stashed changes
-
 
     Vector3d b0(2, 0, 0);
     Vector3d b1(2, 0, 2);
@@ -234,9 +219,6 @@ TEST(TRACESTEST, TestFindTraces)
     // controllo che f6 non abbia tracce (così verifico che un punto non costituisca una traccia e che le sovrapposzizioni non siano considerate)
     EXPECT_TRUE(f6.passingTraces.empty());
     EXPECT_TRUE(f6.notPassingTraces.empty());
-
-
-
 
     // controllo che l'unica traccia non passante di f3 sia quella con f7
 

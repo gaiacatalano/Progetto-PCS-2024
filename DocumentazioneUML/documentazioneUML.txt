@@ -105,7 +105,6 @@ class PolygonalMesh
 +int PositionVert(point, line, tol);
 +void CutAndSave(mesh, polygonId, line , vertIdsHelp, interIds, tol);
 +void CutFracture(mesh, dfn, polygonId, traces, tol);
-+void Turn(&mesh, polygonId, edgeId);
 +void CorrectMesh(mesh);
 +void CreateMesh(fractures, tol, dfn, meshes);
 

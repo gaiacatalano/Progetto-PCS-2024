@@ -37,10 +37,6 @@ bool ImportFractures(const string& filePath, DFN& dfn, double tol) {
     istringstream convertFrac(line);
     convertFrac >> dfn.fractureNumber;
 
-<<<<<<< Updated upstream
-    // ridefinisco la dimensione del vettore di fratture in dfn
-=======
->>>>>>> Stashed changes
     dfn.fractures.resize(dfn.fractureNumber);
 
     for (unsigned int i = 0; i < dfn.fractureNumber; i++) {
@@ -101,10 +97,6 @@ bool ImportFractures(const string& filePath, DFN& dfn, double tol) {
         Vector4d plane = {fra.normal[0], fra.normal[1], fra.normal[2], d};
         fra.plane = plane;
 
-<<<<<<< Updated upstream
-        // salvo la frattura nel vettore delle fratture
-=======
->>>>>>> Stashed changes
         dfn.fractures[i] = fra;
     }
 
@@ -339,7 +331,6 @@ void FindTraces(vector<Fracture> &fractures, double tol, DFN &dfn)
     }
 }
 
-
 // funzione che stampa le informazioni sulle tracce
 void PrintGlobalResults (const string& fileName, vector<Trace>& traces){
     ofstream ofstr(fileName); // se il file non esiste, lo crea
@@ -534,7 +525,7 @@ void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2>
             mesh.extremitiesEdges[numEdges+2] = {edgeSpVert[1][0],interIds[1]};
             mesh.extremitiesEdges[numEdges+3] = {interIds[1],edgeSpVert[1][1]};
 
-            // spengo i lati e aggiungo i pezzi che li formano
+            // spengo i lati e aggiungo i pezzi che li formano, salvando anche i poligoni adiacenti ad ogni lato
             mesh.active_edge[edgeOffIds[0]] = false;
             if (mesh.nearPolygons[edgeOffIds[0]][0]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[0]][0]]==true)
             {
@@ -642,8 +633,7 @@ void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2>
             mesh.extremitiesEdges[numEdges] = {edgeSpVert[1][0],interIds[1]};
             mesh.extremitiesEdges[numEdges+1] = {interIds[1],edgeSpVert[1][1]};
 
-            // spengo i lati e aggiungo i pezzi che li formano
-
+            // spengo i lati e aggiungo i pezzi che li formano, salvando anche i poligoni adiacenti ad ogni lato
             mesh.active_edge[edgeOffIds[1]] = false;
             if (mesh.nearPolygons[edgeOffIds[1]][0]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[1]][0]]==true){
 
@@ -719,8 +709,7 @@ void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2>
             mesh.extremitiesEdges[numEdges] = {edgeSpVert[0][0],interIds[0]};
             mesh.extremitiesEdges[numEdges+1] = {interIds[0],edgeSpVert[0][1]};
 
-            // spengo i lati e aggiungo i pezzi che li formano
-
+            // spengo i lati e aggiungo i pezzi che li formano, salvando anche i poligoni adiacenti ad ogni lato
             mesh.active_edge[edgeOffIds[0]] = false;
             if (mesh.nearPolygons[edgeOffIds[0]][0]!=-1 && mesh.active_polygon[mesh.nearPolygons[edgeOffIds[0]][0]]==true){
 
@@ -753,7 +742,7 @@ void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2>
             mesh.newedge[edgeOffIds[0]] = {edgeNewIds[0],edgeNewIds[1]};
         }
 
-        // se entrambe le inter coincidono coi vertici del lato che "tagliano"
+        //se entrambe le intersezioni coincidono coi vertici del lato che tagliano
         else {
 
             if (PointsDistance(puntiInterFraTra[0], mesh.coordVertices[edgeSpVert[0][0]])<tol){
@@ -771,8 +760,6 @@ void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2>
             }
 
         }
-
-
 
     }
 
