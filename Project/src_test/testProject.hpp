@@ -43,7 +43,7 @@ TEST(IMPORTTEST, TestImportFractures) {
 
     Matrix<double, 3, 4> vm0 {
         {0, 4, 4, 0}, {-2, -2, 2, 2}, {0, 0, 0, 0}
-                           };
+    };
 
     Matrix<double, 3, 4> vm1 {
         {0, 4, 4, 0}, {-2, -2, 2, 2}, {2, 2, 2, 2}
@@ -74,6 +74,7 @@ TEST(IMPORTTEST, TestImportFractures) {
     };
 
 
+<<<<<<< Updated upstream
      EXPECT_LT((vm0-dfn.fractures[0].verticesCoordinates).norm(), tol);
      EXPECT_LT((vm1-dfn.fractures[1].verticesCoordinates).norm(), tol);
      EXPECT_LT((vm2-dfn.fractures[2].verticesCoordinates).norm(), tol);
@@ -82,6 +83,16 @@ TEST(IMPORTTEST, TestImportFractures) {
      EXPECT_LT((vm5-dfn.fractures[5].verticesCoordinates).norm(), tol);
      EXPECT_LT((vm6-dfn.fractures[6].verticesCoordinates).norm(), tol);
      EXPECT_LT((vm7-dfn.fractures[7].verticesCoordinates).norm(), tol);
+=======
+    EXPECT_LT((vm0-dfn.fractures[0].verticesCoordinates).norm(), tol);
+    EXPECT_LT((vm1-dfn.fractures[1].verticesCoordinates).norm(), tol);
+    EXPECT_LT((vm2-dfn.fractures[2].verticesCoordinates).norm(), tol);
+    EXPECT_LT((vm3-dfn.fractures[3].verticesCoordinates).norm(), tol);
+    EXPECT_LT((vm4-dfn.fractures[4].verticesCoordinates).norm(), tol);
+    EXPECT_LT((vm5-dfn.fractures[5].verticesCoordinates).norm(), tol);
+    EXPECT_LT((vm6-dfn.fractures[6].verticesCoordinates).norm(), tol);
+    EXPECT_LT((vm7-dfn.fractures[7].verticesCoordinates).norm(), tol);
+>>>>>>> Stashed changes
 
 
     Vector3d b0(2, 0, 0);

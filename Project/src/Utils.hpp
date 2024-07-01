@@ -44,8 +44,6 @@ void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2>
 
 void CutFracture(PolygonalMesh &Mesh, DFN &dfn, unsigned int &polygonId, vector<unsigned int>& traces, double tol);
 
-void Turn(PolygonalMesh &mesh, unsigned int &polygonId, unsigned int &edgeId);
-
 void CorrectMesh(PolygonalMesh& mesh);
 
 void CreateMesh(vector<Fracture> &fractures, double tol, DFN &dfn, Meshes &meshesV);

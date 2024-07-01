@@ -37,10 +37,6 @@ int main()
                 }
                 cout <<  " ]" << endl;
             }
-            // cout << "Il baricentro della frattura e':" << fract.barycenter << endl;
-            // cout << "La normale della frattura e':" << fract.normal << endl;
-            // cout << "Il raggio della frattura e':" << fract.radius << endl;
-            // cout << "Il piano della frattura e':" << fract.plane << endl;
         }
     }
 
@@ -53,10 +49,8 @@ int main()
     CreateMesh(dfn.fractures,tol,dfn,plm);
 
     for(unsigned int i=0; i<plm.meshes.size(); i++){
-       cout << "Numero di celle 2D: " << plm.meshes[i].numberCell2D << endl;
+        cout << "Numero di celle 2D: " << plm.meshes[i].numberCell2D << endl;
     }
-
-    cout << "Print di prova" << endl;
 
     PrintMeshes("meshes.txt",plm);
 
