@@ -1,5 +1,4 @@
 #pragma once
-#include <iostream>
 #include "DFN.hpp"
 #include "PolygonalMesh.hpp"
 
@@ -8,16 +7,12 @@ using namespace DiscreteFractureNetworkLibrary;
 
 namespace DiscreteFractureNetworkLibrary{
 
-// lettura da file, creazione delle strutture e salvataggio dati
 bool ImportFractures(const string& filePath, DFN& dfn, double tol);
 
-// distanza tra due punti
 double PointsDistance(const Vector3d p1, const Vector3d p2);
 
-// metodo che retituisce true se 2 poligoni sono paralleli
 bool Parallel(Fracture& f1, Fracture& f2, double tol);
 
-// metodo che restituisce true se due sfere si intersecano
 bool IntersectionSphere(Fracture& f1, Fracture& f2, double tol);
 
 array<Vector3d, 2> LineIntersection(Fracture &f1, Fracture &f2);
