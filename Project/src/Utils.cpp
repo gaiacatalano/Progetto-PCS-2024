@@ -14,7 +14,7 @@ namespace DiscreteFractureNetworkLibrary
 {
 
 // funzione che legge il file e salva le informazioni iniziali sulle fratture
-bool ImportFractures(const string& filePath, DFN& dfn, double tol) {
+bool ImportFractures(const string& filePath, DFN& dfn, const double tol) {
     ifstream file(filePath);
 
     if (file.fail()) {
@@ -76,8 +76,7 @@ bool ImportFractures(const string& filePath, DFN& dfn, double tol) {
         fra.barycenter = barycenter;
 
         double radius = 0;
-        for(unsigned int i = 0; i<fra.verticesNumber; i++)
-        {
+        for(unsigned int i = 0; i<fra.verticesNumber; i++) {
             double d = (barycenter - fra.verticesCoordinates.col(i)).norm();
             if(d - radius > tol){
                 radius = d;
@@ -112,7 +111,7 @@ double PointsDistance(const Vector3d p1, const Vector3d p2)
 }
 
 // funzione che verifica se due fratture si trovano su piani paralleli
-bool Parallel(Fracture &f1, Fracture &f2, double tol)
+bool Parallel(const Fracture &f1, const Fracture &f2, const double tol)
 {
     Vector3d n1 = f1.normal;
     Vector3d n2 = f2.normal;
@@ -124,7 +123,7 @@ bool Parallel(Fracture &f1, Fracture &f2, double tol)
 }
 
 // funzione che calcola la più piccola sfera contiene la frattura
-bool IntersectionSphere(Fracture &f1,  Fracture &f2, double tol)
+bool IntersectionSphere(const Fracture &f1,  const Fracture &f2, const double tol)
 {
     double r1 = f1.radius;
     double r2 = f2.radius;
@@ -138,7 +137,7 @@ bool IntersectionSphere(Fracture &f1,  Fracture &f2, double tol)
 }
 
 // funzione che trova la retta d'intersezione tra due piani
-array<Vector3d, 2> LineIntersection(Fracture &f1, Fracture &f2) {
+array<Vector3d, 2> LineIntersection(const Fracture &f1, const Fracture &f2) {
 
     // Vettore direzione della retta (prodotto vettoriale dei normali dei due piani)
     Vector3d n1 = f1.normal;
@@ -157,7 +156,8 @@ array<Vector3d, 2> LineIntersection(Fracture &f1, Fracture &f2) {
     Vector3d b = {p1[3], p2[3], 0};
 
     // risolvo il sistema lineare e trovo il punto che uso per trovare la retta in forma parametrica
-    Vector3d punto = A.fullPivLu().solve(b);
+    PartialPivLU<Matrix3d> lu(A);
+    Vector3d punto = lu.solve(b);
 
     array<Vector3d, 2> retta = {punto, direzione};
 
@@ -165,10 +165,11 @@ array<Vector3d, 2> LineIntersection(Fracture &f1, Fracture &f2) {
 }
 
 // funzione che trova le intersezioni di una frattura con una retta
-pair<bool,Vector2d> InterFractureLine(Fracture &f1, array<Vector3d, 2> &r, double tol){
+pair<bool,Vector2d> InterFractureLine(const Fracture &f1, const array<Vector3d, 2> &line, const double tol){
+
     double tol2 = max(10*numeric_limits<double>::epsilon(), tol*tol);
-    Vector3d punto = r[0];
-    Vector3d direzioneRetta = r[1];
+    Vector3d punto = line[0];
+    Vector3d direzioneRetta = line[1];
     double den = 1/(direzioneRetta.dot(direzioneRetta));
     MatrixXd vertices = f1.verticesCoordinates;
 
@@ -230,7 +231,7 @@ pair<bool,Vector2d> InterFractureLine(Fracture &f1, array<Vector3d, 2> &r, doubl
 }
 
 // funzione che trova le tracce e ne salva i dati
-void FindTraces(vector<Fracture> &fractures, double tol, DFN &dfn)
+void FindTraces(vector<Fracture> &fractures, DFN &dfn, const double tol)
 {
     unsigned int count = 0;
     double tol2 = max(10*numeric_limits<double>::epsilon(), tol*tol);
@@ -332,12 +333,12 @@ void FindTraces(vector<Fracture> &fractures, double tol, DFN &dfn)
 }
 
 // funzione che stampa le informazioni sulle tracce
-void PrintGlobalResults (const string& fileName, vector<Trace>& traces){
+void PrintGlobalResults (const string& fileName, const vector<Trace>& traces){
     ofstream ofstr(fileName); // se il file non esiste, lo crea
     ofstr << "# Number of Traces" << endl;
     ofstr << traces.size() << endl;
     ofstr << "# TraceId; FractureId1; FractureId2; X1; Y1; Z1; X2; Y2; Z2" << endl;
-    for (Trace& tr:traces){
+    for (const Trace& tr:traces){
         ofstr << tr.idTrace << "; " << tr.fracturesIds[0] << "; " << tr.fracturesIds[1] << "; " << (tr.extremitiesCoordinates[0])[0] << "; "
               << (tr.extremitiesCoordinates[0])[1] << "; " << (tr.extremitiesCoordinates[0])[2] << "; " << (tr.extremitiesCoordinates[1])[0] << "; "
               << (tr.extremitiesCoordinates[1])[1] << "; " << (tr.extremitiesCoordinates[1])[2] << endl;
@@ -346,7 +347,7 @@ void PrintGlobalResults (const string& fileName, vector<Trace>& traces){
 }
 
 // funzione che stampa le informazioni sulle fratture e sulle tracce corrispondenti
-void PrintLocalResults (const string& fileName, vector<Fracture>& fractures, const vector<Trace>& traces){
+void PrintLocalResults (const string& fileName, vector<Fracture>& fractures, vector<Trace>& traces, const double tol){
 
     ofstream ofstr(fileName);
     bool firstTime;
@@ -355,8 +356,8 @@ void PrintLocalResults (const string& fileName, vector<Fracture>& fractures, con
         ofstr << "# FractureId; NumTraces" << endl;
         ofstr << fr.id << "; " << (fr.passingTraces.size())+(fr.notPassingTraces.size()) << endl;
 
-        SortTracesByLength(fr.passingTraces, traces);
-        SortTracesByLength(fr.notPassingTraces, traces);
+        SortTracesByLength(fr.passingTraces, traces, tol);
+        SortTracesByLength(fr.notPassingTraces, traces, tol);
 
         for (unsigned int idTrace:fr.passingTraces){
             if (firstTime){
@@ -377,16 +378,15 @@ void PrintLocalResults (const string& fileName, vector<Fracture>& fractures, con
     ofstr.close();
 }
 
-
 // funzione che confronta le tracce per lunghezza (decrescente)
-bool CompareTraceLength(const unsigned int& id1, const unsigned int& id2, const vector<Trace>& traces) {
-    return traces[id1].length > traces[id2].length;
+bool CompareTraceLength(const unsigned int& id1, const unsigned int& id2, const vector<Trace>& traces, const double tol) {
+    return traces[id1].length > traces[id2].length + tol;
 }
 
 // funzione che ordina le tracce
-void SortTracesByLength(vector<unsigned int>& vecIdTraces, const vector<Trace>& traces) {
-    sort(vecIdTraces.begin(), vecIdTraces.end(), [&traces](const unsigned int& id1, const unsigned int& id2) {
-        return CompareTraceLength(id1, id2, traces);
+void SortTracesByLength( vector<unsigned int>& vecIdTraces,  vector<Trace>& traces, const double tol) {
+    sort(vecIdTraces.begin(), vecIdTraces.end(), [&traces, tol](const unsigned int& id1, const unsigned int& id2) {
+        return CompareTraceLength(id1, id2, traces, tol);
     });
 }
 
@@ -396,27 +396,27 @@ void SortTracesByLength(vector<unsigned int>& vecIdTraces, const vector<Trace>& 
 namespace PolygonalMeshLibrary
 {
 
-// funzione che determina la posizione di un punto rispetto ad una retta del piano,
-int PositionVert(const Vector3d& point, array<Vector3d,2> retta, double tol) {
+// funzione che determina la posizione di un punto rispetto ad una line del piano,
+int PositionVert(const Vector3d& point, const array<Vector3d,2> line, const double tol) {
     double tol2 = max(10*numeric_limits<double>::epsilon(), tol*tol);
-    Vector3d relPoint = point - retta[0];
-    Vector3d crossProduct = relPoint.cross(retta[1]);
+    Vector3d relPoint = point - line[0];
+    Vector3d crossProduct = relPoint.cross(line[1]);
     double dotProduct = crossProduct.dot(Vector3d(0, 0, 1));
     if (dotProduct > tol2) {
         return 1;
     }
-    if (dotProduct < tol2){
+    if (dotProduct < -tol2){
         return -1;
     }
     return 0;
 }
 
 // funzione che esegue il taglio del poligono salvando le informazioni successive al taglio
-void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2> &r, array<unsigned int, 2>& vertIdsHelp, array<unsigned int, 2>& interIds, double tol){
+void CutAndSave(PolygonalMesh &mesh, const unsigned int &polygonId, const array<Vector3d, 2> &line, array<unsigned int, 2> &vertIdsHelp, array<unsigned int, 2> &interIds, const double tol){
 
     double tol2 = max(10*numeric_limits<double>::epsilon(), tol*tol);
-    Vector3d punto = r[0];
-    Vector3d direzioneRetta = r[1];
+    Vector3d punto = line[0];
+    Vector3d direzioneRetta = line[1];
     double den = 1/(direzioneRetta.dot(direzioneRetta));
 
     unsigned int count = 0;
@@ -430,8 +430,8 @@ void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2>
 
         // calcolo degli indici dei vertici del segmento di linea
         unsigned int j = (i + 1) % vertIds.size();
-        Vector3d ver1 = mesh.coordVertices[vertIds[i]];
-        Vector3d ver2 = mesh.coordVertices[vertIds[j]];
+        const Vector3d& ver1 = mesh.coordVertices[vertIds[i]];
+        const Vector3d& ver2 = mesh.coordVertices[vertIds[j]];
         Vector3d direzioneLato = ver2 - ver1;
 
         Vector3d prodotto = direzioneLato.cross(direzioneRetta);
@@ -479,7 +479,7 @@ void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2>
     }
 
     // trovo e salvo le intersezioni
-    array<Vector3d, 2> puntiInterFraTra = {r[0] + (beta[0]*r[1]), r[0] + (beta[1]*r[1])};
+    array<Vector3d, 2> puntiInterFraTra = {line[0] + (beta[0]*line[1]), line[0] + (beta[1]*line[1])};
 
     if (edgeSpVert[0][0]!=-1 && edgeSpVert[0][1]!=-1 && edgeSpVert[1][0]!=-1 && edgeSpVert[1][1]!=-1){
         // se le intersezioni non coincidono con nessun vertice
@@ -778,19 +778,12 @@ void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2>
     mesh.nearPolygons[numEdges] = {-1,-1};
     mesh.newedge[numEdges] = {-1,-1};
 
-
 }
 
 // funzione che verifica che ci siano tracce che tagliano la frattura e crea le nuove celle 2D
-void CutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<unsigned int>& traces, double tol){
+void CutFracture(PolygonalMesh &mesh, const DFN &dfn, unsigned int &polygonId, vector<unsigned int> &traces, const double tol){
 
     if (!traces.empty()){
-
-        // 1) Utilizzare la funzione InterFractureLine per trovare i punti di intersezione della
-        //    traccia (passante o non passannte con l'insieme di vertici in considerazione)
-        // 2) Dividere i vertici a seconda che si trovino a destra o a sinistra della traccia in due sottoinsiemi
-        // 3) Dividere le tracce rimanenti
-        // 4) Richiamare la funzione stessa con le nuove sottofratture
 
         mesh.active_polygon[polygonId] = false;
 
@@ -802,8 +795,6 @@ void CutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<
         array<unsigned int, 2> interIds;
         array<unsigned int, 2> vertIdsHelp;
         CutAndSave(mesh, polygonId, rettaTraccia, vertIdsHelp, interIds, tol);
-
-        traces.erase(traces.begin());
 
         // divido i vertici nelle due sotto figure
         vector<unsigned int> vertIdsSub1;
@@ -872,12 +863,11 @@ void CutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<
                 edgeIdsSub1[e] = distance(mesh.extremitiesEdges.begin(),find(mesh.extremitiesEdges.begin(), mesh.extremitiesEdges.end(), lato2));
             }
 
-
             if (mesh.nearPolygons[edgeIdsSub1[e]][0]!=-1 && mesh.nearPolygons[edgeIdsSub1[e]][1]!=-1){
-                if (mesh.nearPolygons[edgeIdsSub1[e]][0] == polygonId){
+                if (mesh.nearPolygons[edgeIdsSub1[e]][0] == static_cast<int>(polygonId)){
                     mesh.nearPolygons[edgeIdsSub1[e]][0] = numPolygons;
                 }
-                else if (mesh.nearPolygons[edgeIdsSub1[e]][1] == polygonId){
+                else if (mesh.nearPolygons[edgeIdsSub1[e]][1] == static_cast<int>(polygonId)){
                     mesh.nearPolygons[edgeIdsSub1[e]][1] = numPolygons;
                 }
             }
@@ -885,7 +875,6 @@ void CutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<
                 mesh.nearPolygons[edgeIdsSub1[e]][1] = numPolygons;
             }
         }
-
 
         mesh.idPolygon[numPolygons] = numPolygons;
         mesh.verticesPolygons[numPolygons] = vertIdsSub1;
@@ -896,7 +885,6 @@ void CutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<
 
         vector<unsigned int> edgeIdsSub2;
         edgeIdsSub2.resize(vertIdsSub2.size());
-
 
         for (unsigned int e=0; e<vertIdsSub2.size(); e++){
             unsigned int j = (e + 1) % vertIdsSub2.size();
@@ -914,10 +902,10 @@ void CutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<
 
 
             if (mesh.nearPolygons[edgeIdsSub2[e]][0]!=-1 && mesh.nearPolygons[edgeIdsSub2[e]][1]!=-1){
-                if (mesh.nearPolygons[edgeIdsSub2[e]][0] == polygonId){
+                if (mesh.nearPolygons[edgeIdsSub2[e]][0] == static_cast<int>(polygonId)){
                     mesh.nearPolygons[edgeIdsSub2[e]][0] = numPolygons+1;
                 }
-                else if (mesh.nearPolygons[edgeIdsSub2[e]][1] == polygonId){
+                else if (mesh.nearPolygons[edgeIdsSub2[e]][1] == static_cast<int>(polygonId)){
                     mesh.nearPolygons[edgeIdsSub2[e]][1] = numPolygons;
                 }
             }
@@ -939,8 +927,9 @@ void CutFracture(PolygonalMesh &mesh, DFN &dfn, unsigned int &polygonId, vector<
         vector<unsigned int> tracesSub1;
         vector<unsigned int> tracesSub2;
 
-        for (unsigned int& traId : traces){
+        for (unsigned int i=1; i<traces.size();i++){
 
+            unsigned int traId = traces[i];
             Trace tra = dfn.traces[traId];
 
             array<Vector3d, 2> estr = tra.extremitiesCoordinates;
@@ -986,7 +975,9 @@ void CorrectMesh(PolygonalMesh& mesh){
 }
 
 // funzione che crea la mesh
-void CreateMesh(vector<Fracture>& fractures, double tol, DFN &dfn, Meshes &meshesV){
+void CreateMesh(const DFN &dfn, Meshes &meshesVector, const double tol){
+
+    const vector<Fracture>& fractures = dfn.fractures;
 
     for (unsigned int i=0; i<fractures.size(); i++)
     {
@@ -1042,57 +1033,43 @@ void CreateMesh(vector<Fracture>& fractures, double tol, DFN &dfn, Meshes &meshe
         mesh.active_polygon.resize(1);
         mesh.active_polygon[0] = true;
 
-
         CutFracture(mesh, dfn, mesh.idPolygon[0], allidT, tol);
 
         CorrectMesh(mesh);
 
-        meshesV.meshes.push_back(mesh);
-
+        meshesVector.meshes.push_back(mesh);
 
     }
 }
 
 // funzione di stampa delle mesh
-void PrintMeshes (const string& fileName, Meshes &meshesV){ // primo file di ouput, con le informazioni sulle tracce
+void PrintMeshes (const string& fileName, Meshes &meshesV){
+
     ofstream ofstr(fileName); // se il file non esiste, lo crea
     ofstr << "# Number of Meshes" << endl;
     ofstr << meshesV.meshes.size() << endl;
-    for (PolygonalMesh& meh: meshesV.meshes){
 
+    for (PolygonalMesh& mesh: meshesV.meshes){
         ofstr << "# Number of Vertices" << endl;
-        ofstr << meh.numberCell0D << endl;
+        ofstr << mesh.numberCell0D << endl;
         ofstr << "# IdVertici; X1; Y1; Z1" << endl;
-        for (unsigned int i=0;i<meh.numberCell0D;i++)
-            ofstr << meh.idVertices[i] << "; " << meh.coordVertices[i][0] << "; " << meh.coordVertices[i][1]
-                  << "; " << meh.coordVertices[i][2] << endl;
+        for (unsigned int i=0;i<mesh.numberCell0D;i++)
+            ofstr << mesh.idVertices[i] << "; " << mesh.coordVertices[i][0] << "; " << mesh.coordVertices[i][1]
+                  << "; " << mesh.coordVertices[i][2] << endl;
 
         ofstr << "# Number of Edges" << endl;
-
-        unsigned int numEdge = 0;
-        for (unsigned int i=0;i<meh.numberCell1D;i++){
-            if (meh.active_edge[i]==true){
-                numEdge++;
-            }
-        }
-
-        ofstr << numEdge << endl;
+        ofstr << mesh.numberCell1D << endl;
         ofstr << "# IdEdges; IdVertices1, IdVertices2" << endl;
-        for (unsigned int i=0;i<meh.numberCell1D;i++){
-            if (meh.active_edge[i]==true){
-                ofstr << meh.idEdges[i] << "; " << meh.extremitiesEdges[i][0] << "; " << meh.extremitiesEdges[i][1] << endl;
+        for (unsigned int i=0;i<mesh.idEdges.size();i++){
+            if (mesh.active_edge[i]==true){
+                ofstr << mesh.idEdges[i] << "; " << mesh.extremitiesEdges[i][0] << "; " << mesh.extremitiesEdges[i][1] << endl;
             }
         }
 
         ofstr << "# Number of Polygons" << endl;
-        unsigned int numPoly = 0;
-        for (unsigned int i=0;i<meh.numberCell2D;i++){
-            if (meh.active_polygon[i]==true){
-                numPoly++;
-            }
-        }
-        ofstr << numPoly << endl;
+        ofstr << mesh.numberCell2D << endl;
     }
+
     ofstr.close();
 }
 

@@ -7,42 +7,42 @@ using namespace DiscreteFractureNetworkLibrary;
 
 namespace DiscreteFractureNetworkLibrary{
 
-bool ImportFractures(const string& filePath, DFN& dfn, double tol);
+bool ImportFractures(const string& filePath, DFN& dfn, const double tol);
 
 double PointsDistance(const Vector3d p1, const Vector3d p2);
 
-bool Parallel(Fracture& f1, Fracture& f2, double tol);
+bool Parallel(const Fracture& f1, const Fracture& f2, const double tol);
 
-bool IntersectionSphere(Fracture& f1, Fracture& f2, double tol);
+bool IntersectionSphere(const Fracture& f1, const Fracture& f2, const double tol);
 
-array<Vector3d, 2> LineIntersection(Fracture &f1, Fracture &f2);
+array<Vector3d, 2> LineIntersection(const Fracture &f1, const Fracture &f2);
 
-pair<bool,Vector2d> InterFractureLine(Fracture &f1, array<Vector3d, 2> &r, double tol);
+pair<bool,Vector2d> InterFractureLine(const Fracture &f1, const array<Vector3d, 2> &line, const double tol);
 
-void FindTraces(vector<Fracture> &fractures, double tol, DFN &dfn);
+void FindTraces(vector<Fracture> &fractures, DFN &dfn, const double tol);
 
-void PrintGlobalResults (const string& fileName, vector<Trace>& traces);
+void PrintGlobalResults (const string& fileName, const vector<Trace>& traces);
 
-void PrintLocalResults (const string& fileName, vector<Fracture>& fractures, const vector<Trace>& traces);
+void PrintLocalResults (const string& fileName, vector<Fracture>& fractures, vector<Trace>& traces, const double tol);
 
-bool CompareTraceLength(const unsigned int& id1, const unsigned int& id2, const std::vector<Trace>& traces);
+bool CompareTraceLength(const unsigned int& id1, const unsigned int& id2, const vector<Trace>& traces, const double tol);
 
-void SortTracesByLength(vector<unsigned int>& vecIdTraces, const vector<Trace>& traces);
+void SortTracesByLength(vector<unsigned int>& vecIdTraces, vector<Trace>& traces, const double tol);
 
 }
 
 namespace PolygonalMeshLibrary{
 
-int PositionVert(const Vector3d& point, array<Vector3d,2> line, double tol);
+int PositionVert(const Vector3d& point, const array<Vector3d,2> line, const double tol);
 
-void CutAndSave(PolygonalMesh &mesh, unsigned int &polygonId, array<Vector3d, 2> &line, array<unsigned int, 2>& vertIdsHelp, array<unsigned int, 2>& pointsIntersIds, double tol);
+void CutAndSave(PolygonalMesh &mesh, const unsigned int &polygonId, const array<Vector3d, 2> &line, array<unsigned int, 2> &vertIdsHelp, array<unsigned int, 2> &pointsIntersIds, const double tol);
 
-void CutFracture(PolygonalMesh &Mesh, DFN &dfn, unsigned int &polygonId, vector<unsigned int>& traces, double tol);
+void CutFracture(PolygonalMesh &Mesh, const DFN &dfn, unsigned int &polygonId, const double tol);
 
 void CorrectMesh(PolygonalMesh& mesh);
 
-void CreateMesh(vector<Fracture> &fractures, double tol, DFN &dfn, Meshes &meshesV);
+void CreateMesh(const DFN &dfn, Meshes &meshesVector, const double tol);
 
-void PrintMeshes (const string& fileName, Meshes &meshesV);
+void PrintMeshes (const string& fileName, Meshes &meshesVector);
 
 }

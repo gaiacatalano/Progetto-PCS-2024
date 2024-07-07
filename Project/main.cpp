@@ -11,10 +11,9 @@ using namespace PolygonalMeshLibrary;
 int main()
 {
     DFN dfn;
-    Meshes plm;
-
+    Meshes meshesVector;
     string path;
-    double tol = 10*numeric_limits<double>::epsilon();
+    const double tol = 10*numeric_limits<double>::epsilon();
 
     cout << "Insert file path (ex: DFN/FR10_data.txt): ";
     cin >> path;
@@ -40,19 +39,19 @@ int main()
         }
     }
 
-    FindTraces(dfn.fractures,tol,dfn);
+    FindTraces(dfn.fractures,dfn, tol);
     cout << "Il numero di tracce e': " << dfn.traces.size() << endl;
 
     PrintGlobalResults("results.txt", dfn.traces);
-    PrintLocalResults("lresults.txt",dfn.fractures,dfn.traces);
+    PrintLocalResults("lresults.txt",dfn.fractures,dfn.traces, tol);
 
-    CreateMesh(dfn.fractures,tol,dfn,plm);
+    CreateMesh(dfn,meshesVector,tol);
 
-    for(unsigned int i=0; i<plm.meshes.size(); i++){
-        cout << "Numero di celle 2D: " << plm.meshes[i].numberCell2D << endl;
+    for(unsigned int i=0; i<meshesVector.meshes.size(); i++){
+        cout << "Numero di celle 2D: " << meshesVector.meshes[i].numberCell2D << endl;
     }
 
-    PrintMeshes("meshes.txt",plm);
+    PrintMeshes("meshes.txt",meshesVector);
 
     return 0;
 }

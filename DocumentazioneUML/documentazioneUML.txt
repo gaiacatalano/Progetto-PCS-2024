@@ -36,7 +36,7 @@ class Fracture
 +array<Vector3d, 2> LineIntersection(f1, f2)
 +pair<bool,Vector2d> InterFractureLine(f1, r, tol)
 +void FindTraces(fractures, tol, dfn)
-+void PrintLocalResults (fileName, vfractures, traces)
++void PrintLocalResults (fileName, fractures, traces)
 
 ..Non member function..
 
@@ -63,8 +63,8 @@ class Trace
 
 +bool void PrintGlobalResults (fileName, traces)
 +void PrintLocalResults (fileName, fractures, traces)
-+bool CompareTraceLength(id1, id2, traces)
-+void SortTracesByLength(vecIdTraces, traces)
++bool CompareTraceLength(id1, id2, traces, tol)
++void SortTracesByLength(vecIdTraces, traces, tol)
 
 
 ..TEST TRACE..
@@ -106,7 +106,7 @@ class PolygonalMesh
 +void CutAndSave(mesh, polygonId, line , vertIdsHelp, interIds, tol);
 +void CutFracture(mesh, dfn, polygonId, traces, tol);
 +void CorrectMesh(mesh);
-+void CreateMesh(fractures, tol, dfn, meshes);
++void CreateMesh(dfn, meshes, tol);
 
 }
 
@@ -114,11 +114,10 @@ class Meshes{
 
 + meshes : vector<PolygonalMesh> 
 
-+ void CreateMesh(fractures, tol, dfn, meshes);
++ void CreateMesh(dfn, meshes, tol);
 + void PrintMeshes (fileName, meshes);
 
 }
 Meshes"1" o-- "many" PolygonalMesh: is made up of
 
-
-@enduml
+@endluml

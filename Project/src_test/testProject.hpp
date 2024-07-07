@@ -13,10 +13,7 @@ using namespace std;
 using namespace PolygonalMeshLibrary;
 using namespace DiscreteFractureNetworkLibrary;
 
-
 double tol=10*numeric_limits<double>::epsilon();
-
-
 
 TEST(IMPORTTEST, TestImportFractures) {
     string path = "DFN/FR8_test.txt";
@@ -37,7 +34,6 @@ TEST(IMPORTTEST, TestImportFractures) {
     EXPECT_EQ(dfn.fractures[5].verticesNumber,3);
     EXPECT_EQ(dfn.fractures[6].verticesNumber,3);
     EXPECT_EQ(dfn.fractures[7].verticesNumber,4);
-
 
     Matrix<double, 3, 4> vm0 {
         {0, 4, 4, 0}, {-2, -2, 2, 2}, {0, 0, 0, 0}
@@ -89,7 +85,6 @@ TEST(IMPORTTEST, TestImportFractures) {
     Vector3d b6(-1.33333333333333333333, 0, 2.666666666666666666666);
     Vector3d b7(2, -1, 0);
 
-
     EXPECT_LT((b0-dfn.fractures[0].barycenter).norm(), tol);
     EXPECT_LT((b1-dfn.fractures[1].barycenter).norm(), tol);
     EXPECT_LT((b2-dfn.fractures[2].barycenter).norm(), tol);
@@ -117,8 +112,6 @@ TEST(IMPORTTEST, TestImportFractures) {
     EXPECT_LT((dfn.fractures[6].normal.cross(n6)).norm(), tol);
     EXPECT_LT((dfn.fractures[7].normal.cross(n7)).norm(), tol);
 
-
-
 }
 
 // DFN dfn;
@@ -145,6 +138,7 @@ TEST(DISTANCETEST, TestPointsDistance){
 }
 
 TEST(DISTANCETEST, TestParallel) {
+
     DFN dfn;
     ImportFractures("DFN/FR8_test.txt", dfn, tol);
     Fracture f0 = dfn.fractures[0];
@@ -152,9 +146,11 @@ TEST(DISTANCETEST, TestParallel) {
     Fracture f3 = dfn.fractures[3];
     EXPECT_TRUE(Parallel(f0, f1, tol));
     EXPECT_FALSE(Parallel(f0, f3, tol));
+
 }
 
 TEST(DISTANCETEST, TestIntersectionSphere) {
+
     DFN dfn;
     ImportFractures("DFN/FR8_test.txt", dfn, tol);
     Fracture f0 = dfn.fractures[0];
@@ -163,23 +159,25 @@ TEST(DISTANCETEST, TestIntersectionSphere) {
     Fracture f4 = dfn.fractures[4];
     EXPECT_TRUE(IntersectionSphere(f2, f4, tol));
     EXPECT_FALSE(IntersectionSphere(f0, f1, tol));
+
 }
 
 Vector3d v(0,1,0);  // vettore lungo EH
 Vector3d null(0, 0, 0);
 
-TEST(TRACESTEST, TestLineIntersection)
-{
+TEST(TRACESTEST, TestLineIntersection) {
+
     DFN dfn;
     ImportFractures("DFN/FR8_test.txt", dfn, tol);
     Fracture f1 = dfn.fractures[1];
     Fracture f3 = dfn.fractures[3];
     Vector3d prod = LineIntersection(f1, f3)[1].cross(v);
     EXPECT_LT(prod.norm(), tol);
+
 }
 
-TEST(TRACESTEST, TestInterFractureLine)
-{
+TEST(TRACESTEST, TestInterFractureLine) {
+
     DFN dfn;
     ImportFractures("DFN/FR8_test.txt", dfn, tol);
     Fracture f3 = dfn.fractures[3];
@@ -197,11 +195,11 @@ TEST(TRACESTEST, TestInterFractureLine)
 
 }
 
-TEST(TRACESTEST, TestFindTraces)
-{
+TEST(TRACESTEST, TestFindTraces) {
+
     DFN dfn;
     ImportFractures("DFN/FR8_test.txt", dfn, tol);
-    FindTraces(dfn.fractures,tol,dfn);
+    FindTraces(dfn.fractures,dfn,tol);
     Fracture f0 = dfn.fractures[0];
     Fracture f1 = dfn.fractures[1];
     Fracture f2 = dfn.fractures[2];
@@ -210,7 +208,6 @@ TEST(TRACESTEST, TestFindTraces)
     Fracture f5 = dfn.fractures[5];
     Fracture f6 = dfn.fractures[6];
     Fracture f7 = dfn.fractures[7];
-
 
     // controllo che f4 non abbia tracce (quindi che non ne abbia anche con f6)
     EXPECT_TRUE(f4.passingTraces.empty());
@@ -229,7 +226,8 @@ TEST(TRACESTEST, TestFindTraces)
 
 }
 
-TEST(TRACESTEST, TestSort){
+TEST(TRACESTEST, TestSort) {
+
     vector<unsigned int> ids = {0, 1};
     Trace a;
     a.idTrace = 0;
@@ -240,7 +238,7 @@ TEST(TRACESTEST, TestSort){
 
     vector<Trace> trs = {a, b};
 
-    SortTracesByLength(ids, trs);
+    SortTracesByLength(ids, trs, tol);
     vector<unsigned int> w = {0, 1};
     EXPECT_TRUE(w == ids);
 

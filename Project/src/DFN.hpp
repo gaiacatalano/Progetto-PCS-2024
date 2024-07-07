@@ -28,11 +28,11 @@ struct Fracture
 struct Trace
 {
     unsigned int idTrace;                             // id traccia
-    array <Vector3d, 2> extremitiesCoordinates = {};  // array delle coordinate dei punti estremi della traccia
-    array <unsigned int, 2> fracturesIds = {};        // array degli id delle due fratture che formano la traccia
+    array<Vector3d, 2> extremitiesCoordinates = {};  // array delle coordinate dei punti estremi della traccia
+    array<unsigned int, 2> fracturesIds = {};        // array degli id delle due fratture che formano la traccia
     double length = 0;                                // lunghezza della traccia (distanza estremità)
     array<bool,2> tips = {};                          // false se passante, true se non passante (prima e seconda frattura)
-    array <Vector3d, 2> lineTrace = {};               // retta contenente la traccia (punto e direzione)
+    array<Vector3d, 2> lineTrace = {};               // retta contenente la traccia (punto e direzione)
 };
 
 struct DFN

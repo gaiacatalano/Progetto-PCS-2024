@@ -8,11 +8,10 @@
 using namespace std;
 using namespace Eigen;
 
-namespace PolygonalMeshLibrary{
+namespace PolygonalMeshLibrary {
 
-
-struct PolygonalMesh{
-
+struct PolygonalMesh
+{
     unsigned int numberCell0D = 0;                          // numero di celle 0D
     vector<unsigned int> idVertices = {};                   // vettore degli id delle celle 0D
     vector<Vector3d> coordVertices = {};                    // vettore di vettori di coordinate delle celle 0D
@@ -24,16 +23,15 @@ struct PolygonalMesh{
     vector<Vector2i> nearPolygons = {};                     // vettore contenenti i vettori di interi con gli id dei poligoni adiacenti
     vector<Vector2i> newedge = {};                          // vettore contenenti i vettori di interi con gli id dei nuovi lati
 
-
     unsigned int numberCell2D = 0;                          // numero di celle 2D
     vector<unsigned int> idPolygon = {};                    // vettore degli id delle celle 2D
     vector<vector<unsigned int>> verticesPolygons = {};     // vettore contenenti i vettori di interi con gli id dei vertici del poligono
     vector<vector<unsigned int>> edgesPolygons = {};        // vettore contenenti i vettori di interi con gli id dei lati del poligono
     vector<bool> active_polygon = {};                       // vettore di booleani, true se il poligono è attivo
-
 };
 
-struct Meshes {
+struct Meshes
+{
     vector<PolygonalMesh> meshes = {};                      // vettore contenente tutte le polygonal mesh
 };
 
